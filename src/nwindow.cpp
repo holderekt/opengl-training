@@ -7,14 +7,10 @@
 #include <fstream>
 #include <string>
 #include <cstring>
+#include <shader.hpp>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
-const char* load_shader(char* filename);
-
-const char *shaderSource = load_shader("./src/shaders/shader1.vert");
-const char *fragmentSource = load_shader("./src/shaders/frag1.frag");
-const char *fragmentSource2 = load_shader("./src/shaders/frag2.frag");
 
 
 int main(){
@@ -22,15 +18,15 @@ int main(){
     srand(time(NULL));
 
     float vertices1[] = {
-        -0.5f, 0.5f, 0.0f, // up
-        -0.1f, -0.5f, 0.0f, // bottom left 
-        -0.5f, -0.5f, 0.0f, // Bottom righ 
+        -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // up
+        -0.1f, -0.5f, 0.0f,0.0f, 1.0f, 0.0f, // bottom left 
+        -0.5f, -0.5f, 0.0f,0.0f, 0.0f, 1.0f // Bottom righ 
     };
 
     float vertices2[] = {
-        -0.45f, 0.5f, 0.0f, // up
-        -0.05f, -0.5f, 0.0f, // bottom left 
-        -0.05f, 0.5f, 0.0f, // Bottom right
+        -0.45f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f,// up
+        -0.05f, -0.5f, 0.0f,1.0f, 0.0f, 0.0f, // bottom left 
+        -0.05f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f// Bottom right
     };
 
     // float verts[2][3];
@@ -62,69 +58,7 @@ int main(){
     return -1;
     }
 
-
-    // Shader Compiling
-    unsigned int vertexShader;
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &shaderSource, NULL);
-    glCompileShader(vertexShader);
-
-    // Checking for compiling errors
-    int success;
-    char infoLog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-
-    if(!success){
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cout << infoLog << std::endl;
-    }
-
-    // Fragment shader compiling
-    unsigned int fragmentShader;
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
-    glCompileShader(fragmentShader);
-
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-
-    if(!success){
-        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        std::cout << infoLog << std::endl;
-    }
-
-    // Fragment shader with different color 
-    unsigned int ncfragmentShader;
-    ncfragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(ncfragmentShader, 1, &fragmentSource2, NULL);
-    glCompileShader(ncfragmentShader);
-
-    // Shared Program
-    unsigned int shaderProgram;
-    shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-
-
-    // Shared Program with a different color
-    unsigned int shaderProgram2;
-    shaderProgram2 = glCreateProgram();
-    glAttachShader(shaderProgram2, vertexShader);
-    glAttachShader(shaderProgram2, ncfragmentShader);
-    glLinkProgram(shaderProgram2);
-
-    // Check compile status
-
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-
-    if(!success){
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        std::cout << infoLog << std::endl;
-    }
-
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-
+    Shader basicShader("./src/shaders/shader1.vert", "./src/shaders/frag1.frag");
 
     // Vertex Buffer Object
     unsigned int VBO[2];
@@ -143,24 +77,27 @@ int main(){
     glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices1), vertices1, GL_STATIC_DRAW);
     glBindVertexArray(VAO[0]);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(3*sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW);
     glBindVertexArray(VAO[1]);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(3*sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     // // Element Buffer Object
     // unsigned int EBO;
     // glGenBuffers(1, &EBO);
     // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-
-
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+    
 
     // Main Loop
     while(!glfwWindowShouldClose(window)){
@@ -172,22 +109,22 @@ int main(){
         glClear(GL_COLOR_BUFFER_BIT);
 
         
-        glUseProgram(shaderProgram);
+        basicShader();
         
 
-        float timeValue = glfwGetTime();
-        float redValue = sin(timeValue) / 2.0f + 0.5f;
-        //std::cout << redValue << std::endl;
-        int uniformLocation =  glGetUniformLocation(shaderProgram, "inputColor");
-        glUniform4f(uniformLocation,redValue, 0.0f, 0.0f, 1.0f);
+        // float timeValue = glfwGetTime();
+        // float redValue = sin(timeValue) / 2.0f + 0.5f;
+        // //std::cout << redValue << std::endl;
+        // int uniformLocation =  glGetUniformLocation(shaderProgram, "inputColor");
+        // glUniform4f(uniformLocation,redValue, 0.0f, 0.0f, 1.0f);
         
         
         glBindVertexArray(VAO[0]);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
          
-        glUseProgram(shaderProgram);
-        glUniform4f(uniformLocation,redValue, 0.4f, 0.0f, 1.0f);
+       
+        // glUniform4f(uniformLocation,redValue, 0.4f, 0.0f, 1.0f);
         
 
         glBindVertexArray(VAO[1]);
@@ -214,19 +151,4 @@ void processInput(GLFWwindow *window){
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS){
         glfwSetWindowShouldClose(window, true);
     }
-}
-
-const char* load_shader(char* filename){
-
-    // File loading
-    std::ifstream input_shader;
-    input_shader.open(filename);
-    std::string buffer{std::istreambuf_iterator<char>(input_shader), std::istreambuf_iterator<char>()};
-    input_shader.close();
-
-    // Tranform std::string in char*
-    char* result = new char[buffer.length() + 1];
-    strcpy(result, buffer.c_str());
-
-    return result;
 }
