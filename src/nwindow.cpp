@@ -1,7 +1,9 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
+#include <random>
+#include <time.h>
+#include <unistd.h>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -17,9 +19,10 @@ const char *shaderSource =
 const char *fragmentSource =
 "#version 420 core\n"
 "out vec4 FragColor;\n"
+"uniform vec4 inputColor;\n"
 "void main()\n"
 "{\n"
-"FragColor = vec4(0.5f, 0.1f, 0.2f, 1.0f);\n"
+"FragColor = inputColor;\n"
 "}\0";
 
 const char *fragmentSource2 =
@@ -31,6 +34,8 @@ const char *fragmentSource2 =
 "}\0";
 
 int main(){
+
+    srand(time(NULL));
 
     float vertices1[] = {
         -0.5f, 0.5f, 0.0f, // up
@@ -182,20 +187,33 @@ int main(){
         glClearColor(0.6f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        
         glUseProgram(shaderProgram);
+        
 
+        float timeValue = glfwGetTime();
+        float redValue = sin(timeValue) / 2.0f + 0.5f;
+        std::cout << redValue << std::endl;
+        int uniformLocation =  glGetUniformLocation(shaderProgram, "inputColor");
+        glUniform4f(uniformLocation,redValue, 0.0f, 0.0f, 1.0f);
+        
         
         glBindVertexArray(VAO[0]);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
-        glUseProgram(shaderProgram2);
+         
+        glUseProgram(shaderProgram);
+        glUniform4f(uniformLocation,redValue, 0.4f, 0.0f, 1.0f);
+        
 
         glBindVertexArray(VAO[1]);
         glDrawArrays(GL_TRIANGLES, 0, 3);
-        
+
 
         glfwSwapBuffers(window);
         glfwPollEvents();
+
+        
     }
 
     glfwTerminate();
