@@ -4,34 +4,18 @@
 #include <random>
 #include <time.h>
 #include <unistd.h>
+#include <fstream>
+#include <string>
+#include <cstring>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
+const char* load_shader(char* filename);
 
-const char *shaderSource = 
-"#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "}\0";
+const char *shaderSource = load_shader("./src/shaders/shader1.vert");
+const char *fragmentSource = load_shader("./src/shaders/frag1.frag");
+const char *fragmentSource2 = load_shader("./src/shaders/frag2.frag");
 
-const char *fragmentSource =
-"#version 420 core\n"
-"out vec4 FragColor;\n"
-"uniform vec4 inputColor;\n"
-"void main()\n"
-"{\n"
-"FragColor = inputColor;\n"
-"}\0";
-
-const char *fragmentSource2 =
-"#version 420 core\n"
-"out vec4 FragColor;\n"
-"void main()\n"
-"{\n"
-"FragColor = vec4(0.0f, 0.5f, 0.8f, 1.0f);\n"
-"}\0";
 
 int main(){
 
@@ -193,7 +177,7 @@ int main(){
 
         float timeValue = glfwGetTime();
         float redValue = sin(timeValue) / 2.0f + 0.5f;
-        std::cout << redValue << std::endl;
+        //std::cout << redValue << std::endl;
         int uniformLocation =  glGetUniformLocation(shaderProgram, "inputColor");
         glUniform4f(uniformLocation,redValue, 0.0f, 0.0f, 1.0f);
         
@@ -230,4 +214,19 @@ void processInput(GLFWwindow *window){
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS){
         glfwSetWindowShouldClose(window, true);
     }
+}
+
+const char* load_shader(char* filename){
+
+    // File loading
+    std::ifstream input_shader;
+    input_shader.open(filename);
+    std::string buffer{std::istreambuf_iterator<char>(input_shader), std::istreambuf_iterator<char>()};
+    input_shader.close();
+
+    // Tranform std::string in char*
+    char* result = new char[buffer.length() + 1];
+    strcpy(result, buffer.c_str());
+
+    return result;
 }
