@@ -40,7 +40,7 @@ int main(){
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     
 
-    GLFWwindow* window = glfwCreateWindow(800, 600, "Day 3", NULL,NULL);
+    GLFWwindow* window = glfwCreateWindow(800, 600, "Day 4", NULL,NULL);
 
     if(window == NULL){
         std::cout << "Cant do shit" << std::endl;
@@ -112,12 +112,13 @@ int main(){
         basicShader();
         
 
-        // float timeValue = glfwGetTime();
-        // float redValue = sin(timeValue) / 2.0f + 0.5f;
+        float timeValue = glfwGetTime();
+        float moveValue = sin(timeValue) / 2.0f + 0.5f;
         // //std::cout << redValue << std::endl;
         // int uniformLocation =  glGetUniformLocation(shaderProgram, "inputColor");
         // glUniform4f(uniformLocation,redValue, 0.0f, 0.0f, 1.0f);
-        
+        basicShader.setValue("hOffset", moveValue);
+        basicShader.setValue("offsetColor", moveValue);
         
         glBindVertexArray(VAO[0]);
         glDrawArrays(GL_TRIANGLES, 0, 3);
