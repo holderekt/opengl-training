@@ -8,31 +8,63 @@
 #include <string>
 #include <cstring>
 #include <shader.hpp>
+#include <texture.hpp>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
 
 
+class movement_function{
+  private:
+    float min;
+    float max;
+
+  public:
+    movement_function(float min, float max)
+      : min(min), max(max) {}
+
+    float range() {return (max-min); }
+    float cycle() { return 2*range(); } 
+
+    float operator()(float input){
+        float value = fmod(input, cycle());
+
+        if (value > range())
+            value = cycle() - value;
+
+        return value + min;
+    }
+};
+
 int main(){
 
     srand(time(NULL));
 
-    float vertices1[] = {
-        -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // up
-        -0.1f, -0.5f, 0.0f,0.0f, 1.0f, 0.0f, // bottom left 
-        -0.5f, -0.5f, 0.0f,0.0f, 0.0f, 1.0f // Bottom righ 
+    float vertices[] = {
+        -0.8f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // up
+        -0.8f, -0.8f, 0.0f,0.0f, 1.0f, 0.0f, // bottom left 
+        -0.2f, -0.8f, 0.0f,0.0f, 0.0f, 1.0f, // Bottom righ 
+        -0.2f, -0.5f, 0.0f,0.5f, 0.5f, 1.0f // Bottom righ 
     };
 
     float vertices2[] = {
-        -0.45f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f,// up
-        -0.05f, -0.5f, 0.0f,1.0f, 0.0f, 0.0f, // bottom left 
-        -0.05f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f// Bottom right
+        0.2f, 0.8f, 0.0f, 1.0f, 0.0f, 0.0f, // up
+        0.2f, 0.5f, 0.0f,0.0f, 1.0f, 0.0f, // bottom left 
+        0.8f, 0.5f, 0.0f,0.0f, 0.0f, 1.0f, // Bottom righ 
+        0.8f, 0.8f, 0.0f,0.5f, 0.5f, 1.0f // Bottom righ 
     };
 
-    // float verts[2][3];
-    // verts[0] = vertices1;
-    // verts[1] = vertices2; 
+    unsigned int elements[] = {
+        0,1,3,
+        1,2,3
+    };
 
+    Texture tex("./textures/brick.png");
+
+    int ciao;
+    std::cin >> ciao;
+
+    /* Window Code */
 
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -40,7 +72,7 @@ int main(){
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     
 
-    GLFWwindow* window = glfwCreateWindow(800, 600, "Day 4", NULL,NULL);
+    GLFWwindow* window = glfwCreateWindow(800, 600, "Day 5", NULL,NULL);
 
     if(window == NULL){
         std::cout << "Cant do shit" << std::endl;
@@ -49,8 +81,6 @@ int main(){
     }
 
     glfwMakeContextCurrent(window);
-    // Tell OpenGL the rendering window
-    //glViewport(0,0,800,600);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)){
@@ -58,84 +88,72 @@ int main(){
     return -1;
     }
 
+    /* Elements Code */ 
+
     Shader basicShader("./src/shaders/shader1.vert", "./src/shaders/frag1.frag");
 
-    // Vertex Buffer Object
-    unsigned int VBO[2];
-    unsigned int VAO[2];
+    unsigned int VAO[2], VBO[2], EBO;
     glGenBuffers(2, VBO);
+    glGenBuffers(1, &EBO);
     glGenVertexArrays(2, VAO);
 
-    // for(int i = 0; i<2; i++){
-    //      glBindBuffer(GL_ARRAY_BUFFER, VBO[i]);
-    //     glBufferData(GL_ARRAY_BUFFER, sizeof(&verts[i]), &verts[i], GL_STATIC_DRAW);
-    //     glBindVertexArray(VAO[i]);
-    //     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    //     glEnableVertexAttribArray(0);
-    // }
+    glBindVertexArray(VAO[0]);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices1), vertices1, GL_STATIC_DRAW);
-    glBindVertexArray(VAO[0]);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(3*sizeof(float)));
+    glVertexAttribPointer(1,3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(3*sizeof(float)));
     glEnableVertexAttribArray(1);
+
+    glBindVertexArray(VAO[1]);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW);
-    glBindVertexArray(VAO[1]);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
+
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(3*sizeof(float)));
+    glVertexAttribPointer(1,3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(3*sizeof(float)));
     glEnableVertexAttribArray(1);
-
-    // // Element Buffer Object
-    // unsigned int EBO;
-    // glGenBuffers(1, &EBO);
-    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
     
+    movement_function movOffset(0.0f, 1.4f);
 
     // Main Loop
     while(!glfwWindowShouldClose(window)){
 
         processInput(window);
 
-        /*  Code  */
+        /*  Code    */
+
         glClearColor(0.6f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        
-        basicShader();
-        
-
         float timeValue = glfwGetTime();
-        float moveValue = sin(timeValue) / 2.0f + 0.5f;
-        // //std::cout << redValue << std::endl;
-        // int uniformLocation =  glGetUniformLocation(shaderProgram, "inputColor");
-        // glUniform4f(uniformLocation,redValue, 0.0f, 0.0f, 1.0f);
-        basicShader.setValue("hOffset", moveValue);
-        basicShader.setValue("offsetColor", moveValue);
-        
+
+        basicShader();
+
+        basicShader.setValue("yOffset",  movOffset(timeValue));
+        basicShader.setValue("xOffset",  0.0f);
         glBindVertexArray(VAO[0]);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-         
-       
-        // glUniform4f(uniformLocation,redValue, 0.4f, 0.0f, 1.0f);
-        
-
+        basicShader.setValue("yOffset", movOffset(timeValue) * (-1));
+        basicShader.setValue("xOffset",  0.0f);
         glBindVertexArray(VAO[1]);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
+        /*          */
 
         glfwSwapBuffers(window);
         glfwPollEvents();
-
-        
     }
 
     glfwTerminate();
@@ -153,3 +171,5 @@ void processInput(GLFWwindow *window){
         glfwSetWindowShouldClose(window, true);
     }
 }
+
+

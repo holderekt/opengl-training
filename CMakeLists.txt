@@ -27,7 +27,7 @@ add_library(GLAD ${CMAKE_SOURCE_DIR}/src/glad/glad.c)
 set(LIBS GLAD)
 
 add_executable(${PROJECT_NAME} ${OGLT_INCLUDE_FILES} ${OGLT_SRC_FILES})
-target_link_libraries(${PROJECT_NAME} -lglfw -ldl ${LIBS})
+target_link_libraries(${PROJECT_NAME} -lglfw -ldl -lpng ${LIBS})
 
 
 
