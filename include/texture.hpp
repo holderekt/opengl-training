@@ -9,17 +9,25 @@ class Texture{
 public:
     Texture(char*);
 
+    void load_cose(png_bytepp inizio, png_bytepp fine, int height, int width){
+        for(int i = 0; i!=height; i++)
+            for(int j =0; j!=width; j++)
+                fine[i][j] = inizio[i][j];
+    }
+
 };
 
 
 /*
     now with the right paddind it should work
 */
-struct pixel{
+
+
+struct RGBPixel{
     uint8_t r;
     uint8_t g;
     uint8_t b;
-}__attribute__((packed));
+};
 
 
 Texture::Texture(char* filename){
@@ -69,26 +77,27 @@ Texture::Texture(char* filename){
 
         row_pointers = (png_bytep*) malloc(sizeof(png_bytep) * height);
         for (y=0; y<height; y++)
+                
                 row_pointers[y] = (png_byte*) malloc(png_get_rowbytes(png_ptr,info_ptr));
 
         png_read_image(png_ptr, row_pointers);
 
-        	for (y=0; y < height; y++) {
-		png_byte* row = row_pointers[y];
-		for (x=0; x<width; x++) {
-			if (color_type == PNG_COLOR_TYPE_RGB) {
-				png_byte *ptr = &(row[x*3]);
-				printf("Pixel at position (%d,%d) has RGBA values (%d,%d,%d,%d)", x ,y, ptr[0], ptr[1], ptr[2], 0);
-			}
-			if (color_type == PNG_COLOR_TYPE_RGBA) {
-				png_byte *ptr = &(row[x*4]);
-				printf("Pixel at position (%d,%d) has RGBA values (%d,%d,%d,%d)", x, y, ptr[0], ptr[1], ptr[2], ptr[3]);
-			}
-			printf("\n");
-            int a;
-            std::cin >> a;
-		}
-	}
+        RGBPixel **color = new RGBPixel*[height];
+        for(int i = 0; i!=height; i++)
+            color[i] = new RGBPixel[width];
+
+        load_cose(row_pointers, (png_bytepp)color, height, width);
+
+        RGBPixel *result = new RGBPixel[width * height];
+
+        for(int i = 0; i!=height; i++)
+            for(int j =0; j!=width; j++)
+                result[i*height + j] = color[i][j];
+      
+        // for(int i = 0; i!=(height*width); i++)
+        //     printf("%d %d %d\n", result[i].r, result[i].g, result[i].b);
+        
+
 
         fclose(fp);
     
@@ -96,3 +105,4 @@ Texture::Texture(char* filename){
     std::cout << height << std::endl;
 
 }   
+

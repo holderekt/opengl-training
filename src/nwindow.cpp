@@ -61,8 +61,7 @@ int main(){
 
     Texture tex("./textures/brick.png");
 
-    int ciao;
-    std::cin >> ciao;
+    
 
     /* Window Code */
 
