@@ -107,6 +107,3 @@ void Texture::_load_bytes(png_structp png_ptr,uint32_t width, uint32_t height, T
     glTexImage2D(GL_TEXTURE_2D, 0, rgb_type, width, height, 0, rgb_type, GL_UNSIGNED_BYTE, image);
     glGenerateMipmap(GL_TEXTURE_2D);
 }
-
-
-
