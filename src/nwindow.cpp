@@ -42,27 +42,20 @@ int main(){
   
     srand(time(NULL));
 
-    // float vertices[] = {
-    //     -0.8f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // up
-    //     -0.8f, -0.8f, 0.0f,0.0f, 1.0f, 0.0f,  1.0f, 0.0f,  // bottom left 
-    //     -0.2f, -0.8f, 0.0f,0.0f, 0.0f, 1.0f,  0.0f, 0.0f,  // Bottom righ 
-    //     -0.2f, -0.5f, 0.0f,0.5f, 0.5f, 1.0f,   0.0f, 1.0f    // Bottom righ 
-    // };
-
     float vertices[] = {
-    // positions          // colors           // texture coords
-     0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
-     0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
-    -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
-    -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
-};
+        -0.8f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // up
+        -0.8f, -0.8f, 0.0f,0.0f, 1.0f, 0.0f,  1.0f, 0.0f,  // bottom left 
+        -0.2f, -0.8f, 0.0f,0.0f, 0.0f, 1.0f,  0.0f, 0.0f,  // Bottom righ 
+        -0.2f, -0.5f, 0.0f,0.5f, 0.5f, 1.0f,   0.0f, 1.0f    // Bottom righ 
+    };
 
-    // float vertices2[] = {
-    //     0.2f, 0.8f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // up
-    //     0.2f, 0.5f, 0.0f,0.0f, 1.0f, 0.0f,  1.0f, 0.0f,// bottom left 
-    //     0.8f, 0.5f, 0.0f,0.0f, 0.0f, 1.0f,  0.0f, 0.0f,// Bottom righ 
-    //     0.8f, 0.8f, 0.0f,0.5f, 0.5f, 1.0f,   0.0f, 1.0f  // Bottom righ 
-    // };
+
+    float vertices2[] = {
+        0.2f, 0.8f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // up
+        0.2f, 0.5f, 0.0f,0.0f, 1.0f, 0.0f,  1.0f, 0.0f,// bottom left 
+        0.8f, 0.5f, 0.0f,0.0f, 0.0f, 1.0f,  0.0f, 0.0f,// Bottom righ 
+        0.8f, 0.8f, 0.0f,0.5f, 0.5f, 1.0f,   0.0f, 1.0f  // Bottom righ 
+    };
 
     unsigned int elements[] = {
         0,1,3,
@@ -123,21 +116,21 @@ int main(){
 
 
 
-    // glBindVertexArray(VAO[1]);
+    glBindVertexArray(VAO[1]);
 
-    // glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
-    // glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW);
 
-    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
 
 
-    // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)0);
-    // glEnableVertexAttribArray(0);
-    // glVertexAttribPointer(1,3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(3*sizeof(float)));
-    // glEnableVertexAttribArray(1);
-    // glVertexAttribPointer(2,2, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(6*sizeof(float)));
-    // glEnableVertexAttribArray(2);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1,3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(3*sizeof(float)));
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2,2, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(6*sizeof(float)));
+    glEnableVertexAttribArray(2);
     
     movement_function movOffset(0.0f, 1.4f);
 
@@ -158,7 +151,7 @@ int main(){
         glClearColor(0.6f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        float timeValue =0; // glfwGetTime();
+        float timeValue =  glfwGetTime();
 
         basicShader();
 
@@ -169,11 +162,12 @@ int main(){
         a();
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-        // glBindTexture(GL_TEXTURE_2D, texture);
-        // basicShader.setValue("yOffset", movOffset(timeValue) * (-1));
-        // basicShader.setValue("xOffset",  0.0f);
-        // glBindVertexArray(VAO[1]);
-        // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        basicShader.setValue("yOffset", movOffset(timeValue) * (-1));
+        basicShader.setValue("xOffset",  0.0f);
+        glBindVertexArray(VAO[1]);
+        a();
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         /*          */
 

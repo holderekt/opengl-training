@@ -5,8 +5,6 @@
 #include <png.h>
 #include <cstdint>
 #include <glad/glad.h>
-#define STB_IMAGE_IMPLEMENTATION
-#include <std.h>
 
 typedef struct RGB8Pixel{
     uint8_t r;
@@ -33,7 +31,7 @@ private:
     unsigned int ID;
 
     template<class T>
-    void _load_bytes(png_structp png_ptr,uint32_t width, uint32_t height, T* image);
+    void _load_bytes(png_structp png_ptr,uint32_t width, uint32_t height, T* image, int);
 };
 
 void Texture::load_image(char* filename){
@@ -73,28 +71,22 @@ void Texture::load_image(char* filename){
     if(bit_depth == 16)
         png_set_strip_16(png_ptr);
 
-
-    RGBA8Pixel* image = new RGBA8Pixel[width * height];
-    _load_bytes(png_ptr, width, height, image);
-
-    glBindTexture(GL_TEXTURE_2D, ID);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
-    glGenerateMipmap(GL_TEXTURE_2D);
+    int lenght = width * height;
+    
+    if(color_type == PNG_COLOR_TYPE_RGB){
+         _load_bytes(png_ptr, width, height, new RGB8Pixel[lenght], GL_RGB);
+    }else{
+         _load_bytes(png_ptr, width, height, new RGBA8Pixel[lenght], GL_RGBA);
+    }
 }
 
 template <class T>
-void Texture::_load_bytes(png_structp png_ptr,uint32_t width, uint32_t height, T* image){
+void Texture::_load_bytes(png_structp png_ptr,uint32_t width, uint32_t height, T* image, int rgb_type){
 
-    RGBA8Pixel**colors = new RGBA8Pixel*[height];
+    T**colors = new T*[height];
 
     for(int i =0; i!= height; i++){
-        colors[i] = new RGBA8Pixel[width];
+        colors[i] = new T[width];
     }
 
     png_read_image(png_ptr, (png_bytepp)(colors));
@@ -104,6 +96,16 @@ void Texture::_load_bytes(png_structp png_ptr,uint32_t width, uint32_t height, T
             image[i*height + j] = colors[i][j];
         }
     }
+
+    glBindTexture(GL_TEXTURE_2D, ID);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, rgb_type, width, height, 0, rgb_type, GL_UNSIGNED_BYTE, image);
+    glGenerateMipmap(GL_TEXTURE_2D);
 }
 
 
