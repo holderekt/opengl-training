@@ -6,25 +6,25 @@
 #include <cstdint>
 #include <glad/glad.h>
 
-typedef struct RGB8Pixel{
+typedef struct{
     uint8_t r;
     uint8_t g;
     uint8_t b;
-}__attribute__((packed));
+}__attribute__((packed))RGB8Pixel;
 
 
-typedef struct RGBA8Pixel{
+typedef struct{
     uint8_t r;
     uint8_t g;
     uint8_t b;
     uint8_t a;
-}__attribute__((packed));
+}__attribute__((packed))RGBA8Pixel;
 
 
 class Texture{
 public:
     Texture(){ glGenTextures(1, &ID);}
-    void load_image(char*);
+    void load_image(std::string);
     void operator()(){glBindTexture(GL_TEXTURE_2D, ID);}
 
 private:
@@ -34,7 +34,7 @@ private:
     void _load_bytes(png_structp png_ptr,uint32_t width, uint32_t height, T* image, int);
 };
 
-void Texture::load_image(char* filename){
+void Texture::load_image(std::string filename){
 
     uint32_t width;
     uint32_t height;
@@ -42,7 +42,7 @@ void Texture::load_image(char* filename){
 
     FILE *file;
 
-    if((file = fopen(filename, "rb")) == nullptr){
+    if((file = fopen(filename.c_str(), "rb")) == nullptr){
         std::cout << "Errore" << std::endl;
         throw "Errore";
     }
@@ -85,14 +85,14 @@ void Texture::_load_bytes(png_structp png_ptr,uint32_t width, uint32_t height, T
 
     T**colors = new T*[height];
 
-    for(int i =0; i!= height; i++){
+    for(int i =0; i!= (int)height; i++){
         colors[i] = new T[width];
     }
 
     png_read_image(png_ptr, (png_bytepp)(colors));
 
-    for(int i =0; i!= height; i++){
-        for(int j =0; j!= width; j++){
+    for(int i =0; i!= (int)height; i++){
+        for(int j =0; j!= (int)width; j++){
             image[i*height + j] = colors[i][j];
         }
     }

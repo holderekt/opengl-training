@@ -52,13 +52,8 @@ std::string Shader::_loadShader(const GLchar* shader_file){
     file_stream.open(shader_file);
     std::stringstream stringStream;
 
-    try{
-        stringStream << file_stream.rdbuf();
-        file_stream.close();
-
-    }catch(std::ifstream::failure e){
-        std::cout << "CANNOT LOAD SHADER FILE" << std::endl;
-    }
+    stringStream << file_stream.rdbuf();
+    file_stream.close();
 
     return stringStream.str();
 }
