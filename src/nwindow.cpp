@@ -74,7 +74,7 @@ int main(){
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     
 
-    GLFWwindow* window = glfwCreateWindow(800, 600, "Day 6", NULL,NULL);
+    GLFWwindow* window = glfwCreateWindow(800, 600, "Day 7", NULL,NULL);
 
     if(window == NULL){
         std::cout << "Cant do shit" << std::endl;
@@ -146,17 +146,28 @@ int main(){
     basicShader.setValue("mTex1",0);
     basicShader.setValue("mTex2",1);
 
-    float timeValue;
+    // float timeValue;
     bool flag = true;
     float yOffset = 0.0;
     float xOffset = 0.0;
+
+
+
 
     // Main Loop
     while(!glfwWindowShouldClose(window)){
 
         processInput(window, &flag);
 
-        std::cout << xOffset << std::endl;
+
+        glm::mat4 trans = glm::mat4(1.0f);
+        
+        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f,1.0f,0.0f));
+        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(1.0f,0.0f,0.0f));
+        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(1.0f,0.0f,1.0f));
+        trans = glm::translate(trans, glm::vec3(sin((float)glfwGetTime()),sin((float)glfwGetTime()), 0.0f));
+
+
         if(glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS){
             if(xOffset <= 0.7)
                 xOffset = xOffset + 0.03;
@@ -191,6 +202,8 @@ int main(){
         
         basicShader.setValue("yOffset", yOffset);
         basicShader.setValue("xOffset", xOffset);
+        unsigned int transformLoc = glGetUniformLocation(basicShader.ID, "transform");
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
         glBindVertexArray(VAO[0]);
         glActiveTexture(GL_TEXTURE0);
         a();
