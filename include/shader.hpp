@@ -14,10 +14,11 @@ class Shader{
         Shader(const GLchar*, const GLchar*);
         void operator()();
         void setValue(const std::string&, float);
-
+        void setValue(const std::string&, int);
+        
         // TODO
         void setValue(const std::string&, bool);
-        void setValue(const std::string&, int);
+        
     private:
         std::string _loadShader(const GLchar*);
 };
@@ -65,4 +66,9 @@ void Shader::operator()(){
 void Shader::setValue(const std::string& name, float value){
     int uniformLocation = glGetUniformLocation(ID, name.c_str());
     glUniform1f(uniformLocation, value);
+}
+
+void Shader::setValue(const std::string& name, int value){
+    int uniformLocation = glGetUniformLocation(ID, name.c_str());
+    glUniform1i(uniformLocation, value);
 }

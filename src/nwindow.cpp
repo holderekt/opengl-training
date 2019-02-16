@@ -12,7 +12,7 @@
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow *window);
+void processInput(GLFWwindow *window, bool *value);
 
 
 class movement_function{
@@ -43,19 +43,19 @@ int main(){
     srand(time(NULL));
 
     float vertices[] = {
-        -0.8f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // up
-        -0.8f, -0.8f, 0.0f,0.0f, 1.0f, 0.0f,  1.0f, 0.0f,  // bottom left 
-        -0.2f, -0.8f, 0.0f,0.0f, 0.0f, 1.0f,  0.0f, 0.0f,  // Bottom righ 
-        -0.2f, -0.5f, 0.0f,0.5f, 0.5f, 1.0f,   0.0f, 1.0f    // Bottom righ 
+        0.3f, 0.3f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // up
+        0.3f, -0.3f, 0.0f,0.0f, 1.0f, 0.0f,  1.0f, 0.0f,  // bottom left 
+        -0.3f, -0.3f, 0.0f,0.0f, 0.0f, 1.0f,  0.0f, 0.0f,  // Bottom righ 
+        -0.3f, 0.3f, 0.0f,0.5f, 0.5f, 1.0f,   0.0f, 1.0f    // top lef
     };
 
 
-    float vertices2[] = {
-        0.2f, 0.8f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // up
-        0.2f, 0.5f, 0.0f,0.0f, 1.0f, 0.0f,  1.0f, 0.0f,// bottom left 
-        0.8f, 0.5f, 0.0f,0.0f, 0.0f, 1.0f,  0.0f, 0.0f,// Bottom righ 
-        0.8f, 0.8f, 0.0f,0.5f, 0.5f, 1.0f,   0.0f, 1.0f  // Bottom righ 
-    };
+    // float vertices2[] = {
+    //     0.2f, 0.8f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // up
+    //     0.2f, 0.5f, 0.0f,0.0f, 1.0f, 0.0f,  1.0f, 0.0f,// bottom left 
+    //     0.8f, 0.5f, 0.0f,0.0f, 0.0f, 1.0f,  0.0f, 0.0f,// Bottom righ 
+    //     0.8f, 0.8f, 0.0f,0.5f, 0.5f, 1.0f,   0.0f, 1.0f  // Bottom righ 
+    // };
 
     unsigned int elements[] = {
         0,1,3,
@@ -116,21 +116,21 @@ int main(){
 
 
 
-    glBindVertexArray(VAO[1]);
+    // glBindVertexArray(VAO[1]);
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW);
+    // glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
+    // glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
+    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
 
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1,3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(3*sizeof(float)));
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(2,2, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(6*sizeof(float)));
-    glEnableVertexAttribArray(2);
+    // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)0);
+    // glEnableVertexAttribArray(0);
+    // glVertexAttribPointer(1,3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(3*sizeof(float)));
+    // glEnableVertexAttribArray(1);
+    // glVertexAttribPointer(2,2, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(6*sizeof(float)));
+    // glEnableVertexAttribArray(2);
     
     movement_function movOffset(0.0f, 1.4f);
 
@@ -138,36 +138,75 @@ int main(){
 
     Texture a;
     a.load_image("./textures/brick.png");
-   
+    Texture b;
+    b.load_image("./textures/mud.png");
 
+
+    basicShader();
+    basicShader.setValue("mTex1",0);
+    basicShader.setValue("mTex2",1);
+
+    float timeValue;
+    bool flag = true;
+    float yOffset = 0.0;
+    float xOffset = 0.0;
 
     // Main Loop
     while(!glfwWindowShouldClose(window)){
 
-        processInput(window);
+        processInput(window, &flag);
+
+        std::cout << xOffset << std::endl;
+        if(glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS){
+            if(xOffset <= 0.7)
+                xOffset = xOffset + 0.03;
+        }
+
+        if(glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS){
+            if(xOffset >= -0.7)
+                xOffset = xOffset - 0.03;
+        }
+
+        if(glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS){
+            if(yOffset <= 0.7)
+                yOffset = yOffset + 0.03;
+        }
+
+        if(glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS){
+            if(yOffset >= (-0.7))
+                yOffset = yOffset - 0.03;
+        }
 
         /*  Code    */
 
         glClearColor(0.6f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        float timeValue =  glfwGetTime();
-
+        // if(flag)
+        //     timeValue =  glfwGetTime();
+      
+        
         basicShader();
 
         
-        basicShader.setValue("yOffset",  movOffset(timeValue));
-        basicShader.setValue("xOffset",  0.0f);
+        basicShader.setValue("yOffset", yOffset);
+        basicShader.setValue("xOffset", xOffset);
         glBindVertexArray(VAO[0]);
+        glActiveTexture(GL_TEXTURE0);
         a();
+        // glActiveTexture(GL_TEXTURE1);
+        // b();
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 
-        basicShader.setValue("yOffset", movOffset(timeValue) * (-1));
-        basicShader.setValue("xOffset",  0.0f);
-        glBindVertexArray(VAO[1]);
-        a();
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        // basicShader.setValue("yOffset", movOffset(timeValue) * (-1));
+        // basicShader.setValue("xOffset",  0.0f);
+        // glBindVertexArray(VAO[1]);
+        // glActiveTexture(GL_TEXTURE0);
+        // a();
+        // // glActiveTexture(GL_TEXTURE1);
+        // // b();
+        // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         /*          */
 
@@ -185,9 +224,15 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height){
     glViewport(0,0,width, height);    
 }
 
-void processInput(GLFWwindow *window){
+void processInput(GLFWwindow *window, bool *value){
+
+
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS){
         glfwSetWindowShouldClose(window, true);
+    }
+
+    if(glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS){
+        *value = !(*value);
     }
 }
 

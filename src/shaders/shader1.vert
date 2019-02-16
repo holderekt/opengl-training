@@ -12,5 +12,5 @@ void main()
 {
     gl_Position = vec4((aPos.x + xOffset), (aPos.y + yOffset) , aPos.z, 1.0);
     inputColor = aColors;
-    Tex = aTex;
+    Tex = vec2(aTex.x - (xOffset), aTex.y + (yOffset));
 }
