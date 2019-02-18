@@ -48,7 +48,7 @@ int main(){
 
     glm::vec3 positions[] = {
         glm::vec3(-1.0f, -1.0f,0.0f),
-        glm::vec3(1.0f, -1.0f,0.0f),
+        glm::vec3(1.0f,-1.0f,0.0f),
         glm::vec3(0.0f, 1.0f,0.0f)
     };
 
@@ -63,7 +63,7 @@ int main(){
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     
 
-    GLFWwindow* window = glfwCreateWindow(800, 600, "Day 7", NULL,NULL);
+    GLFWwindow* window = glfwCreateWindow(800, 600, "Day 9", NULL,NULL);
 
     if(window == NULL){
         std::cout << "Cant do shit" << std::endl;
@@ -83,43 +83,20 @@ int main(){
 
     Shader basicShader("./src/shaders/shader1.vert", "./src/shaders/frag1.frag");
 
-    unsigned int VAO[2], VBO[2], EBO;
+    unsigned int VAO[2], VBO[2];
     glGenBuffers(2, VBO);
-   // glGenBuffers(1, &EBO);
     glGenVertexArrays(2, VAO);
-
     glBindVertexArray(VAO[0]);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
     glBufferData(GL_ARRAY_BUFFER, cube1.size(), cube1(), GL_STATIC_DRAW);
 
-    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
-
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(1,2, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)(3*sizeof(float)));
     glEnableVertexAttribArray(1);
-    //glVertexAttribPointer(2,2, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(6*sizeof(float)));
-    //glEnableVertexAttribArray(2);
 
 
-
-    // glBindVertexArray(VAO[1]);
-
-    // glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
-    // glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW);
-
-    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
-
-
-    // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)0);
-    // glEnableVertexAttribArray(0);
-    // glVertexAttribPointer(1,3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(3*sizeof(float)));
-    // glEnableVertexAttribArray(1);
-    // glVertexAttribPointer(2,2, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(6*sizeof(float)));
-    // glEnableVertexAttribArray(2);
     
     movement_function movOffset(0.0f, 1.4f);
 
@@ -142,6 +119,23 @@ int main(){
 
     glEnable(GL_DEPTH_TEST);  
 
+    // glm::vec3 camera_pos =glm::vec3(0.0f,0.0f,0.5f);
+    // glm::vec3 camera_target = glm::vec3(0.0f, 0.0f, 0.0f);
+    // // The direction is reversed id points toward the camera
+    // glm::vec3 camera_direction = glm::normalize(camera_pos - camera_target);
+    
+    // glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+    // glm::vec3 camera_right = glm::normalize(glm::cross(up, camera_direction));
+    // glm::vec3 camera_up = glm::normalize(glm::cross(camera_direction, camera_right));
+
+    glm::mat4 view;
+    view = glm::lookAt(
+            glm::vec3(0.0f, 0.0f, 3.0f), 
+  		    glm::vec3(0.0f, 0.0f, 0.0f), 
+  		    glm::vec3(0.0f, 1.0f, 0.0f));
+
+    
+
 
 
     // Main Loop
@@ -150,10 +144,15 @@ int main(){
         processInput(window, &flag);
 
 
-        glm::mat4 model = glm::mat4(1.0f);
+        float radius = 5.0f;
+        float camX = sin(glfwGetTime()) * radius;
+        float camZ = cos(glfwGetTime()) * radius;
         glm::mat4 view = glm::mat4(1.0f);
-        //note that we're translating the scene in the reverse direction of where we want to move
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -2.5f)); 
+        view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));  
+
+        glm::mat4 model = glm::mat4(1.0f);
+        //glm::mat4 view = glm::mat4(1.0f);
+        //view = glm::translate(view, glm::vec3(0.0f, 0.0f, -6.0f)); 
         glm::mat4 projection;
         projection = glm::perspective(glm::radians(45.0f), (float)(800/ 600), 0.1f, 100.0f);
 
@@ -182,9 +181,6 @@ int main(){
 
         glClearColor(0.6f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        // if(flag)
-        //     timeValue =  glfwGetTime();
       
         
         basicShader();
@@ -192,7 +188,6 @@ int main(){
         basicShader.setValue("xOffset", xOffset);
 
         unsigned int modelLoc = glGetUniformLocation(basicShader.ID, "model");
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
         unsigned int viewLoc = glGetUniformLocation(basicShader.ID, "view");
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
@@ -204,20 +199,32 @@ int main(){
         glActiveTexture(GL_TEXTURE0);
         a();
 
+        float h[3];
+
         for(int i=0; i!=3; i++){
-            model =  glm::translate(view, positions[i]);
+            glm::mat4 model = glm::mat4(1.0f);
+            model =  glm::translate(model, positions[i]);
             switch(i){
                 case 0:
                     a();
+                    h[0]= 1.0f;
+                    h[1]= 1.0f;
+                    h[2]= 0.0f;
                 break;
                 case 1:
                     b();
+                    h[0]= 0.0f;
+                    h[1]= 1.0f;
+                    h[2]= 1.0f;
                 break;
                 case 2:
                     c();
+                    h[0]= 1.0f;
+                    h[1]= 0.0f;
+                    h[2]= 1.0f;
                 break;
             }
-            model = glm::rotate(model, (float)glfwGetTime()*((i+1)*2), glm::vec3(1.0f, 1.0f, .0f));  
+            model = glm::rotate(model, (float)glfwGetTime()*((i+1)*2), glm::vec3(h[0],h[1],h[2]));  
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
             glDrawArrays(GL_TRIANGLES, 0, 36);          

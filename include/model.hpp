@@ -27,7 +27,7 @@ public:
         vertices = new float[elements.size()];
         _lenght = elements.size();
 
-        for(int i= 0; i!= _lenght; i++){
+        for(size_t i= 0; i!= _lenght; i++){
             vertices[i] = elements[i];
         }
     }
