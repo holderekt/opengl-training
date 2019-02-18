@@ -15,6 +15,53 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window, bool *value);
 
 
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+
+
+bool firstMouse = true;
+float yaw   = -90.0f;	
+float pitch =  0.0f;
+float lastX =  800.0f / 2.0;
+float lastY =  600.0 / 2.0;
+
+
+void mouse_callback(GLFWwindow* window, double xpos, double ypos){
+
+    if (firstMouse)
+    {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
+
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos; 
+    lastX = xpos;
+    lastY = ypos;
+
+    float sensitivity = 0.1f; 
+    xoffset *= sensitivity;
+    yoffset *= sensitivity;
+
+    yaw += xoffset;
+    pitch += yoffset;
+
+   
+    if (pitch > 89.0f)
+        pitch = 89.0f;
+    if (pitch < -89.0f)
+        pitch = -89.0f;
+
+    glm::vec3 front;
+    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    front.y = sin(glm::radians(pitch));
+    front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    cameraFront = glm::normalize(front);
+}
+
+
+
+
 class movement_function{
   private:
     float min;
@@ -40,11 +87,6 @@ class movement_function{
 int main(){
 
     srand(time(NULL));
-
-    // unsigned int elements[] = {
-    //     0,1,3,
-    //     1,2,3
-    // };
 
     glm::vec3 positions[] = {
         glm::vec3(-1.0f, -1.0f,0.0f),
@@ -97,6 +139,12 @@ int main(){
     glEnableVertexAttribArray(1);
 
 
+
+    // Set input mode (cursor) and disable the cursor on screen 
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  
+    glfwSetCursorPosCallback(window, mouse_callback);  
+
+
     
     movement_function movOffset(0.0f, 1.4f);
 
@@ -119,15 +167,6 @@ int main(){
 
     glEnable(GL_DEPTH_TEST);  
 
-    // glm::vec3 camera_pos =glm::vec3(0.0f,0.0f,0.5f);
-    // glm::vec3 camera_target = glm::vec3(0.0f, 0.0f, 0.0f);
-    // // The direction is reversed id points toward the camera
-    // glm::vec3 camera_direction = glm::normalize(camera_pos - camera_target);
-    
-    // glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-    // glm::vec3 camera_right = glm::normalize(glm::cross(up, camera_direction));
-    // glm::vec3 camera_up = glm::normalize(glm::cross(camera_direction, camera_right));
-
     glm::mat4 view;
     view = glm::lookAt(
             glm::vec3(0.0f, 0.0f, 3.0f), 
@@ -135,9 +174,11 @@ int main(){
   		    glm::vec3(0.0f, 1.0f, 0.0f));
 
     glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
-    glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
     glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);   
     float camera_speed = 0.10f;
+
+    float delta_time = 0.0f;
+    float last_frame = 0.0f;
 
 
     // Main Loop
@@ -145,9 +186,13 @@ int main(){
 
         processInput(window, &flag);
 
+        float current_frame = glfwGetTime();
+        delta_time = current_frame - last_frame;
+        last_frame = current_frame;
 
-        //glm::mat4 view = glm::mat4(1.0f);
-        //view = glm::translate(view, glm::vec3(0.0f, 0.0f, -6.0f)); 
+        camera_speed = delta_time * 2.5f;
+
+
         glm::mat4 projection;
         projection = glm::perspective(glm::radians(45.0f), (float)(800/ 600), 0.1f, 100.0f);
 
@@ -243,7 +288,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height){
 }
 
 void processInput(GLFWwindow *window, bool *value){
-
 
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS){
         glfwSetWindowShouldClose(window, true);
