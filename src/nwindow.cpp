@@ -42,24 +42,59 @@ int main(){
   
     srand(time(NULL));
 
-    float vertices[] = {
-        0.3f, 0.3f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // up
-        0.3f, -0.3f, 0.0f,0.0f, 1.0f, 0.0f,  1.0f, 0.0f,  // bottom left 
-        -0.3f, -0.3f, 0.0f,0.0f, 0.0f, 1.0f,  0.0f, 0.0f,  // Bottom righ 
-        -0.3f, 0.3f, 0.0f,0.5f, 0.5f, 1.0f,   0.0f, 1.0f    // top lef
+float vertices[] = {
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+     0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+     0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     };
 
-
-    // float vertices2[] = {
-    //     0.2f, 0.8f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // up
-    //     0.2f, 0.5f, 0.0f,0.0f, 1.0f, 0.0f,  1.0f, 0.0f,// bottom left 
-    //     0.8f, 0.5f, 0.0f,0.0f, 0.0f, 1.0f,  0.0f, 0.0f,// Bottom righ 
-    //     0.8f, 0.8f, 0.0f,0.5f, 0.5f, 1.0f,   0.0f, 1.0f  // Bottom righ 
+    // unsigned int elements[] = {
+    //     0,1,3,
+    //     1,2,3
     // };
 
-    unsigned int elements[] = {
-        0,1,3,
-        1,2,3
+    glm::vec3 positions[] = {
+        glm::vec3(-1.0f, -1.0f,0.0f),
+        glm::vec3(1.0f, -1.0f,0.0f),
+        glm::vec3(0.0f, 1.0f,0.0f)
     };
 
 
@@ -96,7 +131,7 @@ int main(){
 
     unsigned int VAO[2], VBO[2], EBO;
     glGenBuffers(2, VBO);
-    glGenBuffers(1, &EBO);
+   // glGenBuffers(1, &EBO);
     glGenVertexArrays(2, VAO);
 
     glBindVertexArray(VAO[0]);
@@ -104,15 +139,15 @@ int main(){
     glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
+    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1,3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(3*sizeof(float)));
+    glVertexAttribPointer(1,2, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)(3*sizeof(float)));
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(2,2, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(6*sizeof(float)));
-    glEnableVertexAttribArray(2);
+    //glVertexAttribPointer(2,2, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(6*sizeof(float)));
+    //glEnableVertexAttribArray(2);
 
 
 
@@ -139,18 +174,19 @@ int main(){
     Texture a;
     a.load_image("./textures/brick.png");
     Texture b;
-    b.load_image("./textures/mud.png");
-
-
+    b.load_image("./textures/grass.png");
+    Texture c;
+    c.load_image("./textures/red.png");
+   
     basicShader();
     basicShader.setValue("mTex1",0);
-    basicShader.setValue("mTex2",1);
 
     // float timeValue;
     bool flag = true;
     float yOffset = 0.0;
     float xOffset = 0.0;
 
+    glEnable(GL_DEPTH_TEST);  
 
 
 
@@ -160,12 +196,12 @@ int main(){
         processInput(window, &flag);
 
 
-        glm::mat4 trans = glm::mat4(1.0f);
-        
-        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f,1.0f,0.0f));
-        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(1.0f,0.0f,0.0f));
-        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(1.0f,0.0f,1.0f));
-        trans = glm::translate(trans, glm::vec3(sin((float)glfwGetTime()),sin((float)glfwGetTime()), 0.0f));
+        glm::mat4 model = glm::mat4(1.0f);
+        glm::mat4 view = glm::mat4(1.0f);
+        //note that we're translating the scene in the reverse direction of where we want to move
+        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -2.5f)); 
+        glm::mat4 projection;
+        projection = glm::perspective(glm::radians(45.0f), (float)(800/ 600), 0.1f, 100.0f);
 
 
         if(glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS){
@@ -191,38 +227,48 @@ int main(){
         /*  Code    */
 
         glClearColor(0.6f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // if(flag)
         //     timeValue =  glfwGetTime();
       
         
         basicShader();
-
-        
         basicShader.setValue("yOffset", yOffset);
         basicShader.setValue("xOffset", xOffset);
-        unsigned int transformLoc = glGetUniformLocation(basicShader.ID, "transform");
-        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+
+        unsigned int modelLoc = glGetUniformLocation(basicShader.ID, "model");
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+        unsigned int viewLoc = glGetUniformLocation(basicShader.ID, "view");
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+
+        int proLoc = glGetUniformLocation(basicShader.ID, "projection");
+        glUniformMatrix4fv(proLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
         glBindVertexArray(VAO[0]);
         glActiveTexture(GL_TEXTURE0);
         a();
-        // glActiveTexture(GL_TEXTURE1);
-        // b();
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
+        for(int i=0; i!=3; i++){
+            model =  glm::translate(view, positions[i]);
+            switch(i){
+                case 0:
+                    a();
+                break;
+                case 1:
+                    b();
+                break;
+                case 2:
+                    c();
+                break;
+            }
+            model = glm::rotate(model, (float)glfwGetTime()*((i+1)*2), glm::vec3(1.0f, 1.0f, .0f));  
+            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
-        // basicShader.setValue("yOffset", movOffset(timeValue) * (-1));
-        // basicShader.setValue("xOffset",  0.0f);
-        // glBindVertexArray(VAO[1]);
-        // glActiveTexture(GL_TEXTURE0);
-        // a();
-        // // glActiveTexture(GL_TEXTURE1);
-        // // b();
-        // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-        /*          */
-
+            glDrawArrays(GL_TRIANGLES, 0, 36);          
+        }
+        
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
