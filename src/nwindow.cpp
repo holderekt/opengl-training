@@ -134,8 +134,10 @@ int main(){
   		    glm::vec3(0.0f, 0.0f, 0.0f), 
   		    glm::vec3(0.0f, 1.0f, 0.0f));
 
-    
-
+    glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
+    glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+    glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);   
+    float camera_speed = 0.10f;
 
 
     // Main Loop
@@ -144,13 +146,6 @@ int main(){
         processInput(window, &flag);
 
 
-        float radius = 5.0f;
-        float camX = sin(glfwGetTime()) * radius;
-        float camZ = cos(glfwGetTime()) * radius;
-        glm::mat4 view = glm::mat4(1.0f);
-        view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));  
-
-        glm::mat4 model = glm::mat4(1.0f);
         //glm::mat4 view = glm::mat4(1.0f);
         //view = glm::translate(view, glm::vec3(0.0f, 0.0f, -6.0f)); 
         glm::mat4 projection;
@@ -159,23 +154,26 @@ int main(){
 
         if(glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS){
             if(xOffset <= 0.7)
-                xOffset = xOffset + 0.03;
+                cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * camera_speed;
+                
         }
 
         if(glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS){
             if(xOffset >= -0.7)
-                xOffset = xOffset - 0.03;
+                cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * camera_speed;
         }
 
         if(glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS){
             if(yOffset <= 0.7)
-                yOffset = yOffset + 0.03;
+               cameraPos += camera_speed * cameraFront;
         }
 
         if(glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS){
             if(yOffset >= (-0.7))
-                yOffset = yOffset - 0.03;
+               cameraPos -= camera_speed * cameraFront;
         }
+
+        glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
         /*  Code    */
 
