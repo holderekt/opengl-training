@@ -20,7 +20,7 @@ glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 
 bool firstMouse = true;
 float yaw   = -90.0f;	
-float pitch =  -4.0f;
+float pitch =  0.0f;
 float lastX =  800.0f / 2.0;
 float lastY =  600.0 / 2.0;
 
@@ -57,8 +57,6 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos){
     glm::vec3 front;
     front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
     front.y =  -0.5; //sin(glm::radians(pitch));
-    //front.x = sin(glm::radians(yaw)) * 5;
-    //front.z = cos(glm::radians(yaw)) * 5;
     front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
     cameraFront = glm::normalize(front);
 }
@@ -189,9 +187,7 @@ int main(){
             glm::vec3(0.0f, 0.0f, 3.0f), 
   		    glm::vec3(0.0f, 0.0f, 0.0f), 
   		    glm::vec3(0.0f, 1.0f, 0.0f));
-
-    glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
-    glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);   
+ 
     float camera_speed = 0.10f;
 
     float delta_time = 0.0f;
@@ -216,37 +212,63 @@ int main(){
              camera_speed = delta_time * 4.0f;
         }
        
+           float radius = 10.0f;
+        float camX = sin(yaw) * radius;
+        float camZ = cos(yaw) * radius;
 
+ 
+        
 
         glm::mat4 projection;
         projection = glm::perspective(glm::radians(45.0f), (float)(800/ 600), 0.1f, 100.0f);
 
 
-        if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS){
-            if(xOffset <= 0.7)
-                cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * camera_speed;       
-        }
+        // if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS){
+        //     if(xOffset <= 0.7)
+        //         cameraPos += glm::normalize(glm::cross(glm::vec3(camX, 0.0, camZ), cameraUp)) * camera_speed;       
+        // }
 
-        if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS){
-            if(xOffset >= -0.7)
-                cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * camera_speed;
-        }
+        // if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS){
+        //     if(xOffset >= -0.7)
+        //         cameraPos -= glm::normalize(glm::cross(glm::vec3(camX, 0.0, camZ), cameraUp)) * camera_speed;
+        // }
 
-        if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS){
-            if(yOffset <= 0.7)
-               cameraPos += camera_speed * cameraFront;
-        }
+        // if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS){
+        //     if(yOffset <= 0.7)
+        //        cameraPos += camera_speed * glm::vec3(camX, 0.0, camZ);
+        // }
 
-        if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS){
-            if(yOffset >= (-0.7))
-               cameraPos -= camera_speed * cameraFront;
-        }
+        // if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS){
+        //     if(yOffset >= (-0.7))
+        //        cameraPos -= camera_speed * glm::vec3(camX, 0.0, camZ);
+        // }
 
-        glm::vec3 mario = cameraPos - cameraFront;
+     
 
-        cameraPos.y = 2.0f;
+        /* ------------ */
 
-        glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+        glm::vec3 cameraPos = glm::vec3(0.0,0.0,3.0);
+        glm::vec3 cameraTarget = glm::vec3(0.0,0.0,0.0);
+        glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
+        glm::vec3 up = glm::vec3(1.0, 0.0, 0.0);
+        glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
+        glm::vec3 cameraUp = glm::normalize(glm::cross(cameraDirection, cameraRight));
+
+
+
+        /* ------------ */
+
+     
+        glm::mat4 view;
+        float mato = fmod(glfwGetTime(), 400)*2;
+        view = glm::lookAt(glm::vec3(camX+ mato, 0.0, camZ), glm::vec3(mato, 0.0, 0.0), glm::vec3(0.0, 1.0,0.0));
+
+                   glm::vec3 positions[] = {
+        glm::vec3(-1.0f + mato, -1.0f,0.0f),
+        glm::vec3(1.0f + mato,-1.0f,0.0f),
+        glm::vec3(0.0f + mato, 1.0f,0.0f)
+    };
+
 
         /*  Code    */
 
