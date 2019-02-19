@@ -20,7 +20,7 @@ glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 
 bool firstMouse = true;
 float yaw   = -90.0f;	
-float pitch =  0.0f;
+float pitch =  -4.0f;
 float lastX =  800.0f / 2.0;
 float lastY =  600.0 / 2.0;
 
@@ -46,6 +46,8 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos){
     yaw += xoffset;
     pitch += yoffset;
 
+    pitch = -4.0;
+
    
     if (pitch > 89.0f)
         pitch = 89.0f;
@@ -54,7 +56,9 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos){
 
     glm::vec3 front;
     front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    front.y = sin(glm::radians(pitch));
+    front.y =  -0.5; //sin(glm::radians(pitch));
+    //front.x = sin(glm::radians(yaw)) * 5;
+    //front.z = cos(glm::radians(yaw)) * 5;
     front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
     cameraFront = glm::normalize(front);
 }
@@ -94,7 +98,7 @@ int main(){
         glm::vec3(0.0f, 1.0f,0.0f)
     };
 
-    Model<float> cube1("./models/cube.csv");
+    
     
 
     /* Window Code */
@@ -124,6 +128,8 @@ int main(){
     /* Elements Code */ 
 
     Shader basicShader("./src/shaders/shader1.vert", "./src/shaders/frag1.frag");
+    Model<float> cube1("./models/cube.csv");
+    Model<float> floor1("./models/floor.csv");
 
     unsigned int VAO[2], VBO[2];
     glGenBuffers(2, VBO);
@@ -133,6 +139,17 @@ int main(){
     glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
     glBufferData(GL_ARRAY_BUFFER, cube1.size(), cube1(), GL_STATIC_DRAW);
 
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1,2, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)(3*sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+
+
+    glBindVertexArray(VAO[1]);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
+    glBufferData(GL_ARRAY_BUFFER, floor1.size(), floor1(), GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(1,2, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)(3*sizeof(float)));
@@ -180,6 +197,9 @@ int main(){
     float delta_time = 0.0f;
     float last_frame = 0.0f;
 
+    float x = 0;
+    float z = 0;
+
 
     // Main Loop
     while(!glfwWindowShouldClose(window)){
@@ -190,33 +210,41 @@ int main(){
         delta_time = current_frame - last_frame;
         last_frame = current_frame;
 
-        camera_speed = delta_time * 2.5f;
+        if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS){
+            camera_speed = delta_time * 10.0f;
+        }else{
+             camera_speed = delta_time * 4.0f;
+        }
+       
 
 
         glm::mat4 projection;
         projection = glm::perspective(glm::radians(45.0f), (float)(800/ 600), 0.1f, 100.0f);
 
 
-        if(glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS){
+        if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS){
             if(xOffset <= 0.7)
-                cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * camera_speed;
-                
+                cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * camera_speed;       
         }
 
-        if(glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS){
+        if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS){
             if(xOffset >= -0.7)
                 cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * camera_speed;
         }
 
-        if(glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS){
+        if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS){
             if(yOffset <= 0.7)
                cameraPos += camera_speed * cameraFront;
         }
 
-        if(glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS){
+        if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS){
             if(yOffset >= (-0.7))
                cameraPos -= camera_speed * cameraFront;
         }
+
+        glm::vec3 mario = cameraPos - cameraFront;
+
+        cameraPos.y = 2.0f;
 
         glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
@@ -272,6 +300,32 @@ int main(){
 
             glDrawArrays(GL_TRIANGLES, 0, 36);          
         }
+
+        basicShader();
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(proLoc, 1, GL_FALSE, glm::value_ptr(projection));
+        glm::mat4 trans = glm::mat4(1.0f);  
+        trans = glm::scale(trans, glm::vec3(40.0,40.0, 0.0));  
+        glm::mat4 model = glm::mat4(1.0f);
+        model =  glm::translate(model, glm::vec3(0.0f,-5.0f, 0.0f));
+        model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f,0.0f, 0.0f)); 
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model*trans));
+        glBindVertexArray(VAO[1]);
+        glActiveTexture(GL_TEXTURE0);
+        a();
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
+
+        basicShader();
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(proLoc, 1, GL_FALSE, glm::value_ptr(projection));
+        model = glm::mat4(1.0f);
+        model =  glm::translate(model, glm::vec3(cameraPos.x,-4.5f, cameraPos.z-10.0f)); 
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        glBindVertexArray(VAO[0]);
+        glActiveTexture(GL_TEXTURE0);
+        b();
+        glDrawArrays(GL_TRIANGLES, 0, 36);
         
         glfwSwapBuffers(window);
         glfwPollEvents();
