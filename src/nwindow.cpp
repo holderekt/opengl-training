@@ -241,7 +241,7 @@ int main(){
         // if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS){
         //     if(yOffset >= (-0.7))
         //        cameraPos -= camera_speed * glm::vec3(camX, 0.0, camZ);
-        // }
+        // } 
 
      
 
