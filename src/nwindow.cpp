@@ -20,26 +20,28 @@ glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 
 bool firstMouse = true;
 float yaw   = -90.0f;	
-float pitch =  -4.0f;
+float pitch =  -20.0f;
 float lastX =  800.0f / 2.0;
 float lastY =  600.0 / 2.0;
+float camX = 0;
+float camZ = 0;
 
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos){
 
     if (firstMouse)
     {
-        lastX = xpos;
+        lastX =  xpos;
         lastY = ypos;
         firstMouse = false;
     }
 
-    float xoffset = xpos - lastX;
+    float xoffset = -(xpos - lastX);
     float yoffset = lastY - ypos; 
     lastX = xpos;
     lastY = ypos;
 
-    float sensitivity = 0.1f; 
+    float sensitivity = 0.001f;
     xoffset *= sensitivity;
     yoffset *= sensitivity;
 
@@ -48,18 +50,22 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos){
 
     pitch = -4.0;
 
+
    
     if (pitch > 89.0f)
         pitch = 89.0f;
     if (pitch < -89.0f)
         pitch = -89.0f;
 
+    camX = sin(yaw) * 20.0f;
+    camZ = cos(yaw) * 20.0f;  
+
     glm::vec3 front;
-    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    front.x = camX;
     front.y =  -0.5; //sin(glm::radians(pitch));
     //front.x = sin(glm::radians(yaw)) * 5;
     //front.z = cos(glm::radians(yaw)) * 5;
-    front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    front.z = camZ;
     cameraFront = glm::normalize(front);
 }
 
@@ -190,8 +196,8 @@ int main(){
   		    glm::vec3(0.0f, 0.0f, 0.0f), 
   		    glm::vec3(0.0f, 1.0f, 0.0f));
 
-    glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
-    glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);   
+glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
+glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
     float camera_speed = 0.10f;
 
     float delta_time = 0.0f;
@@ -221,32 +227,34 @@ int main(){
         glm::mat4 projection;
         projection = glm::perspective(glm::radians(45.0f), (float)(800/ 600), 0.1f, 100.0f);
 
-
         if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS){
             if(xOffset <= 0.7)
-                cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * camera_speed;       
+                cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * camera_speed;       
         }
 
         if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS){
             if(xOffset >= -0.7)
-                cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * camera_speed;
+                cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * camera_speed;
         }
 
         if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS){
             if(yOffset <= 0.7)
-               cameraPos += camera_speed * cameraFront;
+               cameraPos -= camera_speed * cameraFront;
         }
 
         if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS){
             if(yOffset >= (-0.7))
-               cameraPos -= camera_speed * cameraFront;
+               cameraPos += camera_speed * cameraFront;
         }
 
         glm::vec3 mario = cameraPos - cameraFront;
 
         cameraPos.y = 2.0f;
 
-        glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+        //cameraPos.x += camX;
+        //cameraPos.z += camZ;
+
+        glm::mat4 view = glm::lookAt(glm::vec3(cameraPos.x + camX, cameraPos.y, cameraPos.z +camZ), cameraPos + cameraFront, cameraUp);
 
         /*  Code    */
 
@@ -320,7 +328,7 @@ int main(){
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(proLoc, 1, GL_FALSE, glm::value_ptr(projection));
         model = glm::mat4(1.0f);
-        model =  glm::translate(model, glm::vec3(cameraPos.x,-4.5f, cameraPos.z-10.0f)); 
+        model =  glm::translate(model, glm::vec3(cameraPos.x,-4.5f, cameraPos.z)); 
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
         glBindVertexArray(VAO[0]);
         glActiveTexture(GL_TEXTURE0);
