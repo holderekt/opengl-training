@@ -1,11 +1,15 @@
 #pragma once
 
 #include <glad/glad.h>
+#include <GLFW/glfw3.h>
 #include <string>
 #include <cstring>
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 class Shader{
     public:
@@ -15,6 +19,7 @@ class Shader{
         void operator()();
         void setValue(const std::string&, float);
         void setValue(const std::string&, int);
+        void setValue(const std::string&, glm::mat4);
         
         // TODO
         void setValue(const std::string&, bool);
@@ -71,4 +76,9 @@ void Shader::setValue(const std::string& name, float value){
 void Shader::setValue(const std::string& name, int value){
     int uniformLocation = glGetUniformLocation(ID, name.c_str());
     glUniform1i(uniformLocation, value);
+}
+
+void Shader::setValue(const std::string& name, glm::mat4 mat){
+    int uniformLocation = glGetUniformLocation(ID, name.c_str());
+    glUniformMatrix4fv(uniformLocation,1, GL_FALSE, glm::value_ptr(mat));
 }

@@ -13,6 +13,7 @@
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window, bool *value);
+double rotation_mouse(float x);
 
 
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -328,7 +329,9 @@ glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(proLoc, 1, GL_FALSE, glm::value_ptr(projection));
         model = glm::mat4(1.0f);
+        float angleInDegrees_ = atan2(camZ,camX+3);
         model =  glm::translate(model, glm::vec3(cameraPos.x,-4.5f, cameraPos.z)); 
+        model =  glm::rotate(model,-angleInDegrees_ ,glm::vec3(0.0,1.0,0.0)); 
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
         glBindVertexArray(VAO[0]);
         glActiveTexture(GL_TEXTURE0);
@@ -361,3 +364,11 @@ void processInput(GLFWwindow *window, bool *value){
 }
 
 
+double rotation_mouse(float x){
+    double max_old = 20.0f;
+    double min_old = -20.0f;
+    double max_new = 180.0f;
+    double min_new = 0.0f;
+
+    return ((max_new - min_new)/(max_old - min_old)) * ( x -   max_old) + max_new;
+}
