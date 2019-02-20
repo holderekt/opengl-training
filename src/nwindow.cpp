@@ -15,14 +15,14 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window, bool *value);
 
 
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-
 
 bool firstMouse = true;
 float yaw   = -90.0f;	
 float pitch =  0.0f;
 float lastX =  800.0f / 2.0;
 float lastY =  600.0 / 2.0;
+float camX = 0;
+float camZ = 0;
 
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos){
@@ -46,22 +46,15 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos){
     yaw += xoffset;
     pitch += yoffset;
 
-    pitch = -4.0;
+    float radius = 10.0f;
+    camX = sin(yaw) * radius;
+    camZ = cos(yaw) * radius;
+    
 
-   
-    if (pitch > 89.0f)
-        pitch = 89.0f;
-    if (pitch < -89.0f)
-        pitch = -89.0f;
+    std::cout << "-- " << camX << " " << camZ << std::endl;
+ 
 
-    glm::vec3 front;
-    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    front.y =  -0.5; //sin(glm::radians(pitch));
-    front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-    cameraFront = glm::normalize(front);
 }
-
-
 
 
 class movement_function{
@@ -89,15 +82,6 @@ class movement_function{
 int main(){
 
     srand(time(NULL));
-
-    glm::vec3 positions[] = {
-        glm::vec3(-1.0f, -1.0f,0.0f),
-        glm::vec3(1.0f,-1.0f,0.0f),
-        glm::vec3(0.0f, 1.0f,0.0f)
-    };
-
-    
-    
 
     /* Window Code */
 
@@ -177,24 +161,11 @@ int main(){
 
     // float timeValue;
     bool flag = true;
-    float yOffset = 0.0;
-    float xOffset = 0.0;
-
     glEnable(GL_DEPTH_TEST);  
-
-    glm::mat4 view;
-    view = glm::lookAt(
-            glm::vec3(0.0f, 0.0f, 3.0f), 
-  		    glm::vec3(0.0f, 0.0f, 0.0f), 
-  		    glm::vec3(0.0f, 1.0f, 0.0f));
- 
     float camera_speed = 0.10f;
-
     float delta_time = 0.0f;
     float last_frame = 0.0f;
 
-    float x = 0;
-    float z = 0;
 
 
     // Main Loop
@@ -212,62 +183,32 @@ int main(){
              camera_speed = delta_time * 4.0f;
         }
        
-           float radius = 10.0f;
-        float camX = sin(yaw) * radius;
-        float camZ = cos(yaw) * radius;
 
- 
+
+
         
-
+ 
         glm::mat4 projection;
         projection = glm::perspective(glm::radians(45.0f), (float)(800/ 600), 0.1f, 100.0f);
 
-
-        // if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS){
-        //     if(xOffset <= 0.7)
-        //         cameraPos += glm::normalize(glm::cross(glm::vec3(camX, 0.0, camZ), cameraUp)) * camera_speed;       
-        // }
-
-        // if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS){
-        //     if(xOffset >= -0.7)
-        //         cameraPos -= glm::normalize(glm::cross(glm::vec3(camX, 0.0, camZ), cameraUp)) * camera_speed;
-        // }
-
-        // if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS){
-        //     if(yOffset <= 0.7)
-        //        cameraPos += camera_speed * glm::vec3(camX, 0.0, camZ);
-        // }
-
-        // if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS){
-        //     if(yOffset >= (-0.7))
-        //        cameraPos -= camera_speed * glm::vec3(camX, 0.0, camZ);
-        // } 
-
-     
-
-        /* ------------ */
-
-        glm::vec3 cameraPos = glm::vec3(0.0,0.0,3.0);
+        glm::vec3 cameraPos = glm::vec3(camX,0.0,camZ);
         glm::vec3 cameraTarget = glm::vec3(0.0,0.0,0.0);
         glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
-        glm::vec3 up = glm::vec3(1.0, 0.0, 0.0);
+        glm::vec3 up = glm::vec3(0.0, 1.0, 0.0);
         glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
         glm::vec3 cameraUp = glm::normalize(glm::cross(cameraDirection, cameraRight));
-
-
-
-        /* ------------ */
 
      
         glm::mat4 view;
         float mato = fmod(glfwGetTime(), 400)*2;
-        view = glm::lookAt(glm::vec3(camX+ mato, 0.0, camZ), glm::vec3(mato, 0.0, 0.0), glm::vec3(0.0, 1.0,0.0));
+        cameraPos.x += 5;
+        view = glm::lookAt(cameraPos, cameraTarget, cameraUp);
 
-                   glm::vec3 positions[] = {
-        glm::vec3(-1.0f + mato, -1.0f,0.0f),
-        glm::vec3(1.0f + mato,-1.0f,0.0f),
-        glm::vec3(0.0f + mato, 1.0f,0.0f)
-    };
+        glm::vec3 positions[] = {
+        glm::vec3(-1.0f +5, -1.0f,0.0f),
+        glm::vec3(1.0f +5,-1.0f,0.0f),
+        glm::vec3(0.0f +5, 1.0f,0.0f)
+            };
 
 
         /*  Code    */
@@ -277,8 +218,8 @@ int main(){
       
         
         basicShader();
-        basicShader.setValue("yOffset", yOffset);
-        basicShader.setValue("xOffset", xOffset);
+        basicShader.setValue("yOffset", 0.0f);
+        basicShader.setValue("xOffset", 0.0f);
 
         unsigned int modelLoc = glGetUniformLocation(basicShader.ID, "model");
 
