@@ -96,7 +96,7 @@ void Texture::_load_bytes(png_structp png_ptr,uint32_t width, uint32_t height, T
 
     for(int i =0; i!= (int)height; i++){
         for(int j =0; j!= (int)width; j++){
-            image[i*height + j] = colors[i][j];
+            image[i*width + j] = colors[i][j];
         }
     }
 

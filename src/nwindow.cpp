@@ -106,7 +106,6 @@ int main(){
     };
 
     
-    
 
     /* Window Code */
 
@@ -175,11 +174,11 @@ int main(){
     // Textures
 
     Texture a;
-    a.load_image("./textures/brick.png");
+    a.load_image("./textures/adrian.png");
     Texture b;
-    b.load_image("./textures/grass.png");
+    b.load_image("./textures/adrian.png");
     Texture c;
-    c.load_image("./textures/red.png");
+    c.load_image("./textures/adrian.png");
    
     basicShader();
     basicShader.setValue("mTex1",0);
