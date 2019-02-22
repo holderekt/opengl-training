@@ -27,6 +27,7 @@ typedef struct{
 class Texture{
 public:
     Texture(){ glGenTextures(1, &ID);}
+    Texture(std::string);
     void load_image(std::string);
     void operator()(){glBindTexture(GL_TEXTURE_2D, ID);}
 
@@ -36,6 +37,11 @@ private:
     template<class T>
     void _load_bytes(png_structp png_ptr,uint32_t width, uint32_t height, T* image, int);
 };
+
+Texture::Texture(std::string filename){
+    glGenTextures(1, &ID);
+    load_image(filename);
+}
 
 void Texture::load_image(std::string filename){
 
