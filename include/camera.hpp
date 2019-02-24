@@ -12,12 +12,13 @@
 
 typedef enum {D_UP, D_DOWN, D_RIGHT, D_LEFT} directions;
 
-class TPCamera{
+class Camera{
 public:
 
-    TPCamera(glm::vec3, glm::vec3, glm::vec3, float);
+    Camera(glm::vec3, glm::vec3, glm::vec3, float);
     void move(directions);
     void changeRotation(float);
+    void changeRotation(float, float);
     glm::mat4 getView();
     void setSpeed(float speed){ camera_speed = speed; };
 
@@ -36,7 +37,7 @@ private:
 };
 
 
-TPCamera::TPCamera(glm::vec3 cameraPos, glm::vec3 cameraUp, glm::vec3 cameraFront, float radius){
+Camera::Camera(glm::vec3 cameraPos, glm::vec3 cameraUp, glm::vec3 cameraFront, float radius){
     this->cameraPos   = cameraPos;
     this->cameraUp    = cameraUp;
     this->cameraFront = cameraFront;
@@ -45,24 +46,24 @@ TPCamera::TPCamera(glm::vec3 cameraPos, glm::vec3 cameraUp, glm::vec3 cameraFron
 };
 
 
-void TPCamera::move(directions dir){
+void Camera::move(directions dir){
     switch (dir){
         case D_UP:
-            cameraPos -= camera_speed * cameraFront;
-            break;
-        case D_DOWN:
             cameraPos += camera_speed * cameraFront;
             break;
+        case D_DOWN:
+            cameraPos -= camera_speed * cameraFront;
+            break;
         case D_RIGHT:
-            cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * camera_speed;
+            cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * camera_speed;
             break;
         case D_LEFT:
-            cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * camera_speed;
+            cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * camera_speed;
             break;
     }
 }
 
-void TPCamera::changeRotation(float yaw){
+void Camera::changeRotation(float yaw){
     camX = sin(yaw) * radius;
     camZ = cos(yaw) * radius;
     cameraFront.x = camX;
@@ -70,7 +71,16 @@ void TPCamera::changeRotation(float yaw){
     cameraFront = glm::normalize(cameraFront);
 }
 
+void Camera::changeRotation(float yaw, float pitch){
+    glm::vec3 front;
+    yaw = -yaw;
+    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    front.y = sin(glm::radians(pitch));
+    front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    cameraFront = glm::normalize(front);
+}
 
-glm::mat4 TPCamera::getView(){
+
+glm::mat4 Camera::getView(){
     return glm::lookAt(glm::vec3(cameraPos.x + camX, cameraPos.y, cameraPos.z +camZ), cameraPos + cameraFront, cameraUp);
 }

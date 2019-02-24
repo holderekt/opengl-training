@@ -10,7 +10,7 @@
 #include <shader.hpp>
 #include <texture.hpp>
 #include <model.hpp>
-#include <TPcamera.hpp>
+#include <camera.hpp>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *glWindowPos3dv);
@@ -20,7 +20,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 glm::vec3 playerFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 playerPos = glm::vec3(0.0f, -4.5f,  3.0f);
 glm::vec3 playerUp = glm::vec3(0.0f, 1.0f,  0.0f);
-TPCamera camera(glm::vec3(0.0f, 2.0f,  3.0f),glm::vec3(0.0f, 1.0f,  0.0f),glm::vec3(0.0f, 0.0f, -1.0f), 20.0f);
+Camera camera(glm::vec3(0.0f, 2.0f,  3.0f), glm::vec3(0.0f, 1.0f,  0.0f),glm::vec3(0.0f, 0.0f, -1.0f), 20.0f);
 
 /* Mouse callback utility data */
 bool firstMouse = true;
@@ -302,7 +302,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos){
     lastX = xpos;
     lastY = ypos;
 
-    float sensitivity = 0.001f;
+    float sensitivity = 0.1f;
     xoffset *= sensitivity;
     yoffset *= sensitivity;
 
@@ -318,6 +318,6 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos){
     front.z = camZ;
 
     playerFront = glm::normalize(front);
-    camera.changeRotation(yaw);
+    camera.changeRotation(yaw, pitch);
 }
 
