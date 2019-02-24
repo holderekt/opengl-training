@@ -61,6 +61,10 @@ void Camera::move(directions dir){
             cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * camera_speed;
             break;
     }
+
+    std::cout << " Pos " << cameraPos.x << " " << cameraPos.y << " " << cameraPos.z << std::endl;
+    std::cout << " Front " << cameraFront.x << cameraFront.y << cameraFront.z << std::endl;
+
 }
 
 void Camera::changeRotation(float yaw){
@@ -73,14 +77,13 @@ void Camera::changeRotation(float yaw){
 
 void Camera::changeRotation(float yaw, float pitch){
     glm::vec3 front;
-    yaw = -yaw;
     front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
     front.y = sin(glm::radians(pitch));
     front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
     cameraFront = glm::normalize(front);
 }
 
-
+// todO ADD CAMZ / X
 glm::mat4 Camera::getView(){
-    return glm::lookAt(glm::vec3(cameraPos.x + camX, cameraPos.y, cameraPos.z +camZ), cameraPos + cameraFront, cameraUp);
+    return glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 }

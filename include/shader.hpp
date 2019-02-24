@@ -20,6 +20,7 @@ class Shader{
         void setValue(const std::string&, float);
         void setValue(const std::string&, int);
         void setValue(const std::string&, glm::mat4);
+        void setValue(const std::string&, glm::vec3);
         
         // TODO
         void setValue(const std::string&, bool);
@@ -81,4 +82,9 @@ void Shader::setValue(const std::string& name, int value){
 void Shader::setValue(const std::string& name, glm::mat4 mat){
     int uniformLocation = glGetUniformLocation(ID, name.c_str());
     glUniformMatrix4fv(uniformLocation,1, GL_FALSE, glm::value_ptr(mat));
+}
+
+void Shader::setValue(const std::string& name, glm::vec3 vec){
+    int uniformLocation = glGetUniformLocation(ID, name.c_str());
+    glUniform3f(uniformLocation, vec.x, vec.y, vec.z);
 }
