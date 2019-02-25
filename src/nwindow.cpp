@@ -21,6 +21,7 @@ glm::vec3 playerFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 playerPos = glm::vec3(0.0f, -4.5f,  3.0f);
 glm::vec3 playerUp = glm::vec3(0.0f, 1.0f,  0.0f);
 Camera camera(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f,  0.0f),glm::vec3(0.0f, 0.0f, 0.0f), 0.0f);
+glm::vec3 lightPos =  glm::vec3(1.2,0.0,2.0);
 
 /* Mouse callback utility data */
 bool firstMouse = true;
@@ -106,7 +107,7 @@ int main(){
     glBufferData(GL_ARRAY_BUFFER, cube1.size(), cube1(), GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)3*sizeof(float));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(3*sizeof(float)));
     glEnableVertexAttribArray(1);
 
 
@@ -131,6 +132,11 @@ int main(){
         
         processInput(window);
 
+        float current_frame = glfwGetTime();
+        lightPos.x = sin(current_frame) * 2.0f;
+        lightPos.z = cos(current_frame) * 2.0f;
+
+
         glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)(800/ 600), 0.1f, 100.0f);
         glm::mat4 view = camera.getView();
         glm::mat4 model;
@@ -143,7 +149,7 @@ int main(){
 
         lampShader();
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(1.2,1.0,2.0));
+        model = glm::translate(model,lightPos);
         model = glm::scale(model, glm::vec3(0.2f));
 
         lampShader.setValue("model", model);
@@ -157,7 +163,7 @@ int main(){
         lightShader();
         lightShader.setValue("objectColor", glm::vec3(1.0,0.5,0.31));
         lightShader.setValue("lightColor", glm::vec3(1.0,1.0,1.0));
-        lightShader.setValue("lightPos", glm::vec3(1.2,1.0,2.0));
+        lightShader.setValue("lightPos", lightPos);
 
         model = glm::mat4(1.0);
 
@@ -260,6 +266,9 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos){
         pitch =  89.0f;
     if(pitch < -89.0f)
         pitch = -89.0f;
+
+    camX = sin(yaw) * 20;
+    camZ = cos(yaw) * 20;
 
     camera.changeRotation(-yaw, pitch);
 }
