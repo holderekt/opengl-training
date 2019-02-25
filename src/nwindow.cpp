@@ -97,15 +97,17 @@ int main(){
     glBindVertexArray(VAO[0]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
     glBufferData(GL_ARRAY_BUFFER, cube1.size(), cube1(), GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
  
 
     glBindVertexArray(VAO[1]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
     glBufferData(GL_ARRAY_BUFFER, cube1.size(), cube1(), GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)3*sizeof(float));
+    glEnableVertexAttribArray(1);
 
 
     /* Cursor settings */
@@ -153,8 +155,9 @@ int main(){
 
 
         lightShader();
-        lightShader.setValue("objectColor", glm::vec3(1.0,5.0,0.31));
+        lightShader.setValue("objectColor", glm::vec3(1.0,0.5,0.31));
         lightShader.setValue("lightColor", glm::vec3(1.0,1.0,1.0));
+        lightShader.setValue("lightPos", glm::vec3(1.2,1.0,2.0));
 
         model = glm::mat4(1.0);
 
