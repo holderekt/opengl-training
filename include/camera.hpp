@@ -20,7 +20,8 @@ public:
     void changeRotation(float);
     void changeRotation(float, float);
     glm::mat4 getView();
-    void setSpeed(float speed){ camera_speed = speed; };
+    glm::vec3 getPosition(){ return cameraPos; }
+    void setSpeed(float speed){ camera_speed = speed; }
 
 private:
 

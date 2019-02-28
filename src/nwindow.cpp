@@ -21,7 +21,7 @@ glm::vec3 playerFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 playerPos = glm::vec3(0.0f, -4.5f,  3.0f);
 glm::vec3 playerUp = glm::vec3(0.0f, 1.0f,  0.0f);
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f,  0.0f),glm::vec3(0.0f, 0.0f, -3.0f), 0.0f);
-glm::vec3 lightPos =  glm::vec3(1.2,0.0,2.0);
+glm::vec3 lightPos =  glm::vec3(1.2,1.3,2.0);
 
 /* Mouse callback utility data */
 bool firstMouse = true;
@@ -67,7 +67,7 @@ int main(){
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     
-    GLFWwindow* window = glfwCreateWindow(800, 600, "Day 9", NULL,NULL);
+    GLFWwindow* window = glfwCreateWindow(800, 600, "Day 14", NULL,NULL);
 
     if(window == NULL){
         std::cout << "Cant do shit" << std::endl;
@@ -144,7 +144,7 @@ int main(){
 
         // Background color
     
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         lampShader();
@@ -156,14 +156,24 @@ int main(){
         lampShader.setValue("projection", projection);
         lampShader.setValue("view", view);
 
-        glBindVertexArray(VAO[0]);
+        glBindVertexArray(VAO[0]);  
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
 
         lightShader();
-        lightShader.setValue("objectColor", glm::vec3(1.0,0.5,0.31));
+        lightShader.setValue("objectColor", glm::vec3(0.60, 1.00, 0.90));
         lightShader.setValue("lightColor", glm::vec3(1.0,1.0,1.0));
         lightShader.setValue("lightPos", lightPos);
+        lightShader.setValue("cameraPos", camera.getPosition());
+
+        lightShader.setValue("material.ambient", glm::vec3(0.60, 1.00, 0.90));
+        lightShader.setValue("material.diffuse", glm::vec3( 0.60, 1.00, 0.90));
+        lightShader.setValue("material.specular", glm::vec3(0.60, 1.00, 0.90));
+        lightShader.setValue("material.shinnes", 32.0f);
+
+        lightShader.setValue("light.ambient", glm::vec3(0.1, 0.1, 0.1   ));
+        lightShader.setValue("light.diffuse", glm::vec3( 0.2, 0.2, 0.2));
+        lightShader.setValue("light.specular", glm::vec3(1.0, 1.0, 1.0));
 
         model = glm::mat4(1.0);
 
