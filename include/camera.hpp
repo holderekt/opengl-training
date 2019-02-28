@@ -77,9 +77,9 @@ void Camera::changeRotation(float yaw){
 
 void Camera::changeRotation(float yaw, float pitch){
     glm::vec3 front;
-    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    front.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
     front.y = sin(glm::radians(pitch));
-    front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    front.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
     cameraFront = glm::normalize(front);
 }
 

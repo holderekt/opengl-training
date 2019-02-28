@@ -20,7 +20,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 glm::vec3 playerFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 playerPos = glm::vec3(0.0f, -4.5f,  3.0f);
 glm::vec3 playerUp = glm::vec3(0.0f, 1.0f,  0.0f);
-Camera camera(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f,  0.0f),glm::vec3(0.0f, 0.0f, 0.0f), 0.0f);
+Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f,  0.0f),glm::vec3(0.0f, 0.0f, -3.0f), 0.0f);
 glm::vec3 lightPos =  glm::vec3(1.2,0.0,2.0);
 
 /* Mouse callback utility data */
@@ -150,7 +150,7 @@ int main(){
         lampShader();
         model = glm::mat4(1.0f);
         model = glm::translate(model,lightPos);
-        model = glm::scale(model, glm::vec3(0.2f));
+        model = glm::scale(model, glm::vec3(0.1f));
 
         lampShader.setValue("model", model);
         lampShader.setValue("projection", projection);
@@ -250,7 +250,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos){
         firstMouse = false;
     }
 
-    float xoffset = -(xpos - lastX);
+    float xoffset = (xpos - lastX);
     float yoffset = lastY - ypos; 
     lastX = xpos;
     lastY = ypos;
@@ -270,6 +270,6 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos){
     camX = sin(yaw) * 20;
     camZ = cos(yaw) * 20;
 
-    camera.changeRotation(-yaw, pitch);
+    camera.changeRotation(yaw, pitch);
 }
 
