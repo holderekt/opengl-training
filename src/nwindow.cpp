@@ -98,18 +98,19 @@ int main(){
     glBindVertexArray(VAO[0]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
     glBufferData(GL_ARRAY_BUFFER, cube1.size(), cube1(), GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
  
 
     glBindVertexArray(VAO[1]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
     glBufferData(GL_ARRAY_BUFFER, cube1.size(), cube1(), GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(3*sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(3*sizeof(float)));
     glEnableVertexAttribArray(1);
-
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(6*sizeof(float)));
+    glEnableVertexAttribArray(2);
 
     /* Cursor settings */
 
@@ -119,7 +120,7 @@ int main(){
 
     /* Textures */
 
-    // Texture brickTex("./textures/brick.png");
+    Texture brickTex("./textures/brick.png");
     // Texture grassTex("./textures/grass.png");
     // Texture redTex("./textures/red.png");
     glEnable(GL_DEPTH_TEST);  
@@ -159,15 +160,14 @@ int main(){
         glBindVertexArray(VAO[0]);  
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
-
+        
         lightShader();
         lightShader.setValue("objectColor", glm::vec3(0.60, 1.00, 0.90));
         lightShader.setValue("lightColor", glm::vec3(1.0,1.0,1.0));
         lightShader.setValue("lightPos", lightPos);
         lightShader.setValue("cameraPos", camera.getPosition());
 
-        lightShader.setValue("material.ambient", glm::vec3(0.60, 1.00, 0.90));
-        lightShader.setValue("material.diffuse", glm::vec3( 0.60, 1.00, 0.90));
+        lightShader.setValue("material.diffuse", (int)0);
         lightShader.setValue("material.specular", glm::vec3(0.60, 1.00, 0.90));
         lightShader.setValue("material.shinnes", 32.0f);
 
@@ -180,9 +180,11 @@ int main(){
         lightShader.setValue("model", model);
         lightShader.setValue("projection", projection);
         lightShader.setValue("view", view);
-        
+
+        glActiveTexture(GL_TEXTURE0);
+        brickTex();
         glBindVertexArray(VAO[1]);
-         glDrawArrays(GL_TRIANGLES, 0, 36);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
     
         
         glfwSwapBuffers(window);
