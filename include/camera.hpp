@@ -49,16 +49,16 @@ Camera::Camera(glm::vec3 cameraPos, glm::vec3 cameraUp, glm::vec3 cameraFront, f
 void Camera::move(directions dir){
     switch (dir){
         case D_UP:
-            cameraPos += camera_speed * cameraFront;
-            break;
-        case D_DOWN:
             cameraPos -= camera_speed * cameraFront;
             break;
+        case D_DOWN:
+            cameraPos += camera_speed * cameraFront;
+            break;
         case D_RIGHT:
-            cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * camera_speed;
+            cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * camera_speed;
             break;
         case D_LEFT:
-            cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * camera_speed;
+            cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * camera_speed;
             break;
     }
 }

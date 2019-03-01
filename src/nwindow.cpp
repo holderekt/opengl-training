@@ -318,6 +318,6 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos){
     front.z = camZ;
 
     playerFront = glm::normalize(front);
-    camera.changeRotation(yaw, pitch);
+    camera.changeRotation(yaw);
 }
 
