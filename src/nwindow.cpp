@@ -21,7 +21,7 @@ glm::vec3 playerFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 playerPos = glm::vec3(0.0f, -4.5f,  3.0f);
 glm::vec3 playerUp = glm::vec3(0.0f, 1.0f,  0.0f);
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f,  0.0f),glm::vec3(0.0f, 0.0f, -3.0f), 0.0f);
-glm::vec3 lightPos =  glm::vec3(1.2,1.3,2.0);
+glm::vec3 lightPos =  glm::vec3(1.0,0.0,1.0);
 
 /* Mouse callback utility data */
 bool firstMouse = true;
@@ -168,11 +168,11 @@ int main(){
         lightShader.setValue("cameraPos", camera.getPosition());
 
         lightShader.setValue("material.diffuse", (int)0);
-        lightShader.setValue("material.specular", glm::vec3(0.60, 1.00, 0.90));
-        lightShader.setValue("material.shinnes", 32.0f);
+        lightShader.setValue("material.specular", glm::vec3(0.5, 0.5, 0.5));
+        lightShader.setValue("material.shinnes", 64.0f);
 
-        lightShader.setValue("light.ambient", glm::vec3(0.1, 0.1, 0.1   ));
-        lightShader.setValue("light.diffuse", glm::vec3( 0.2, 0.2, 0.2));
+        lightShader.setValue("light.ambient", glm::vec3(0.2, 0.2, 0.2));
+        lightShader.setValue("light.diffuse", glm::vec3( 0.5, 0.5, 0.5));
         lightShader.setValue("light.specular", glm::vec3(1.0, 1.0, 1.0));
 
         model = glm::mat4(1.0);

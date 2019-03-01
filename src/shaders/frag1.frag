@@ -27,21 +27,21 @@ uniform Material material;
 void main(){
     
    
-    // vec3 ambient = light.ambient * texture(material.diffuse * Tex).rgb;
+    vec3 ambient = light.ambient * texture(material.diffuse , Tex).rgb;
   	
-    // vec3 norm = normalize(Normal);
-    // vec3 lightDir = normalize(lightPos - FragPos);
-    // float diff = max(dot(norm, lightDir), 0.0);
-    // vec3 diffuse = light.diffuse * diff * texture(material.diffuse * Tex).rgb;
+    vec3 norm = normalize(Normal);
+    vec3 lightDir = normalize(lightPos - FragPos);
+    float diff = max(dot(norm, lightDir), 0.0);
+    vec3 diffuse = light.diffuse * diff * texture(material.diffuse , Tex).rgb;
 
-    // vec3 cameraDir = normalize(cameraPos - FragPos);
-    // vec3 reflectDir = reflect(-lightDir, norm);
+    vec3 cameraDir = normalize(cameraPos - FragPos);
+    vec3 reflectDir = reflect(-lightDir, norm);
 
-    // float spec = pow(max(dot(cameraDir, reflectDir), 0.0), material.shinnes);
-    // vec3 specular = light.specular * (spec * material.specular); 
+    float spec = pow(max(dot(cameraDir, reflectDir), 0.0), material.shinnes);
+    vec3 specular = light.specular * (spec * material.specular); 
             
-    // vec3 result = (ambient + diffuse + specular) * objectColor;
-    //FragColor = vec4(result, 1.0);
+    vec3 result = (ambient + diffuse + specular) * objectColor;
+    FragColor = vec4(result, 1.0);
 
-    FragColor = texture(material.diffuse, Tex);
+
 }
