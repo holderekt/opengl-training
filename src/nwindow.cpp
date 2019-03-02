@@ -120,8 +120,8 @@ int main(){
 
     /* Textures */
 
-    Texture brickTex("./textures/crate.png");
-    // Texture grassTex("./textures/grass.png");
+    Texture crateTex("./textures/crate.png");
+    Texture crate_spec_mapTex("./textures/crate_specular_map.png");
     // Texture redTex("./textures/red.png");
     glEnable(GL_DEPTH_TEST);  
 
@@ -168,6 +168,7 @@ int main(){
         lightShader.setValue("cameraPos", camera.getPosition());
 
         lightShader.setValue("material.diffuse", (int)0);
+        lightShader.setValue("material.specular", (int)1);
         lightShader.setValue("material.specular", glm::vec3(0.5, 0.5, 0.5));
         lightShader.setValue("material.shinnes", 64.0f);
 
@@ -182,7 +183,10 @@ int main(){
         lightShader.setValue("view", view);
 
         glActiveTexture(GL_TEXTURE0);
-        brickTex();
+        crateTex();
+        glActiveTexture(GL_TEXTURE1);
+        crate_spec_mapTex();
+
         glBindVertexArray(VAO[1]);
         glDrawArrays(GL_TRIANGLES, 0, 36);
     

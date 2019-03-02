@@ -23,6 +23,13 @@ typedef struct{
     uint8_t a;
 }__attribute__((packed))RGBA8Pixel;
 
+typedef struct{
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
+    uint8_t gray;
+}__attribute__((packed))GRAYSCALE8Pixel;
+
 
 class Texture{
 public:
@@ -84,8 +91,10 @@ void Texture::load_image(std::string filename){
     
     if(color_type == PNG_COLOR_TYPE_RGB){
          _load_bytes(png_ptr, width, height, new RGB8Pixel[lenght], GL_RGB);
-    }else{
+    }else if(color_type == PNG_COLOR_TYPE_RGBA){
          _load_bytes(png_ptr, width, height, new RGBA8Pixel[lenght], GL_RGBA);
+    }else{
+         _load_bytes(png_ptr, width, height, new GRAYSCALE8Pixel[lenght], GL_LUMINANCE8);
     }
 }
 
