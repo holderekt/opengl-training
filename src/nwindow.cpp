@@ -120,7 +120,7 @@ int main(){
 
     /* Textures */
 
-    Texture brickTex("./textures/brick.png");
+    Texture brickTex("./textures/adrian.png");
     // Texture grassTex("./textures/grass.png");
     // Texture redTex("./textures/red.png");
     glEnable(GL_DEPTH_TEST);  
