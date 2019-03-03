@@ -175,10 +175,8 @@ int main(){
         lightShader.setValue("light.ambient", glm::vec3(0.2, 0.2, 0.2));
         lightShader.setValue("light.diffuse", glm::vec3( 0.5, 0.5, 0.5));
         lightShader.setValue("light.specular", glm::vec3(1.0, 1.0, 1.0));
+        lightShader.setValue("light.direction", glm::vec3(-10.0, -1.0, -0.3));
 
-        model = glm::mat4(1.0);
-
-        lightShader.setValue("model", model);
         lightShader.setValue("projection", projection);
         lightShader.setValue("view", view);
 
@@ -188,7 +186,37 @@ int main(){
         crate_spec_mapTex();
 
         glBindVertexArray(VAO[1]);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        glm::vec3 posizioni[] ={
+            glm::vec3(0.0,0.0,0.0),
+            glm::vec3(2.0,6.0,3.0),
+            glm::vec3(-1.0,-2.0,3.0),
+            glm::vec3(0.8,2.0,-1.0),
+            glm::vec3(2.6,-1,2.3),
+            glm::vec3(-1.8,2.5,3.0),
+            glm::vec3(12.9,4.5,-5.0),
+            glm::vec3(7.0,2.0,1.0),
+            glm::vec3(2.0,4.0,-1.0),
+            glm::vec3(-1.5,2.0,3.0)
+        };
+
+        for (unsigned int i = 0; i != 10; i++){
+            model = glm::mat4(1.0);
+            model = glm::translate(model, posizioni[i]);
+            float angle = 10 * i;
+            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f,0.3f,0.5f));
+            lightShader.setValue("model", model);
+
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
+
+        
+
+        
+       
+
+   
+        
     
         
         glfwSwapBuffers(window);
