@@ -21,7 +21,7 @@ glm::vec3 playerFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 playerPos = glm::vec3(0.0f, -4.5f,  3.0f);
 glm::vec3 playerUp = glm::vec3(0.0f, 1.0f,  0.0f);
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f,  0.0f),glm::vec3(0.0f, 0.0f, -3.0f), 0.0f);
-glm::vec3 lightPos =  glm::vec3(1.0,0.0,1.0);
+glm::vec3 lightPos =  glm::vec3(1.0,-2.0,1.0);
 
 /* Mouse callback utility data */
 bool firstMouse = true;
@@ -134,8 +134,8 @@ int main(){
         processInput(window);
 
         float current_frame = glfwGetTime();
-        lightPos.x = sin(current_frame) * 2.0f;
-        lightPos.z = cos(current_frame) * 2.0f;
+        //lightPos.x = sin(current_frame) * 5.0f;
+        lightPos.z = cos(current_frame) * 10.0f;
 
 
         glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)(800/ 600), 0.1f, 100.0f);
@@ -176,6 +176,10 @@ int main(){
         lightShader.setValue("light.diffuse", glm::vec3( 0.5, 0.5, 0.5));
         lightShader.setValue("light.specular", glm::vec3(1.0, 1.0, 1.0));
         lightShader.setValue("light.direction", glm::vec3(-10.0, -1.0, -0.3));
+        lightShader.setValue("light.position", lightPos);
+        lightShader.setValue("light.constant", 1.0f);
+        lightShader.setValue("light.quadratic", 0.032f);
+        lightShader.setValue("light.linear", 0.09f);
 
         lightShader.setValue("projection", projection);
         lightShader.setValue("view", view);
@@ -188,19 +192,12 @@ int main(){
         glBindVertexArray(VAO[1]);
 
         glm::vec3 posizioni[] ={
-            glm::vec3(0.0,0.0,0.0),
-            glm::vec3(2.0,6.0,3.0),
-            glm::vec3(-1.0,-2.0,3.0),
-            glm::vec3(0.8,2.0,-1.0),
-            glm::vec3(2.6,-1,2.3),
-            glm::vec3(-1.8,2.5,3.0),
-            glm::vec3(12.9,4.5,-5.0),
-            glm::vec3(7.0,2.0,1.0),
-            glm::vec3(2.0,4.0,-1.0),
-            glm::vec3(-1.5,2.0,3.0)
+            glm::vec3(0.0,-1.0,0.0),
+            glm::vec3(-1,-1,0.0),
+            glm::vec3(1.0,-1.0,0.0),
         };
 
-        for (unsigned int i = 0; i != 10; i++){
+        for (unsigned int i = 0; i != 3; i++){
             model = glm::mat4(1.0);
             model = glm::translate(model, posizioni[i]);
             float angle = 10 * i;
@@ -210,13 +207,21 @@ int main(){
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
 
-        
+      
+        for(int j = 0; j != 200; j++){
+                model = glm::mat4(1.0);
+                model = glm::translate(model, glm::vec3(0.0, 0.0, -(float)j*j));
+            for (unsigned int i = 0; i != 3; i++){
+                model = glm::translate(model, posizioni[i]);
+                lightShader.setValue("model", model);
+                glDrawArrays(GL_TRIANGLES, 0, 36);
+            }
+        }
+
 
         
-       
 
-   
-        
+    
     
         
         glfwSwapBuffers(window);
@@ -311,8 +316,8 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos){
     if(pitch < -89.0f)
         pitch = -89.0f;
 
-    camX = sin(yaw) * 20;
-    camZ = cos(yaw) * 20;
+    camX = sin(yaw) * 100;
+    camZ = cos(yaw) * 100;
 
     camera.changeRotation(yaw, pitch);
 }

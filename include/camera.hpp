@@ -62,10 +62,6 @@ void Camera::move(directions dir){
             cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * camera_speed;
             break;
     }
-
-    std::cout << " Pos " << cameraPos.x << " " << cameraPos.y << " " << cameraPos.z << std::endl;
-    std::cout << " Front " << cameraFront.x << cameraFront.y << cameraFront.z << std::endl;
-
 }
 
 void Camera::changeRotation(float yaw){
