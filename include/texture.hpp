@@ -93,7 +93,7 @@ void Texture::load_image(std::string filename){
          _load_bytes(png_ptr, width, height, new RGB8Pixel[lenght], GL_RGB);
     }else if(color_type == PNG_COLOR_TYPE_RGBA){
          _load_bytes(png_ptr, width, height, new RGBA8Pixel[lenght], GL_RGBA);
-    }else{
+    }else if (color_type == PNG_COLOR_TYPE_GRAY){
          _load_bytes(png_ptr, width, height, new GRAYSCALE8Pixel[lenght], GL_LUMINANCE8);
     }
 }

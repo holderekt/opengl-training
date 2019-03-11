@@ -172,14 +172,13 @@ int main(){
         lightShader.setValue("material.specular", glm::vec3(0.5, 0.5, 0.5));
         lightShader.setValue("material.shinnes", 64.0f);
 
-        lightShader.setValue("light.ambient", glm::vec3(0.2, 0.2, 0.2));
-        lightShader.setValue("light.diffuse", glm::vec3( 0.5, 0.5, 0.5));
-        lightShader.setValue("light.specular", glm::vec3(1.0, 1.0, 1.0));
-        lightShader.setValue("light.direction", glm::vec3(-10.0, -1.0, -0.3));
-        lightShader.setValue("light.position", lightPos);
-        lightShader.setValue("light.constant", 1.0f);
-        lightShader.setValue("light.quadratic", 0.032f);
-        lightShader.setValue("light.linear", 0.09f);
+        lightShader.setValue("pLight.ambient", glm::vec3(0.2, 0.2, 0.2));
+        lightShader.setValue("pLight.diffuse", glm::vec3( 0.5, 0.5, 0.5));
+        lightShader.setValue("pLight.specular", glm::vec3(1.0, 1.0, 1.0));
+        lightShader.setValue("pLight.position", lightPos);
+        lightShader.setValue("pLight.constant", 1.0f);
+        lightShader.setValue("pLight.quadratic", 0.032f);
+        lightShader.setValue("pLight.linear", 0.09f);
 
         lightShader.setValue("projection", projection);
         lightShader.setValue("view", view);
