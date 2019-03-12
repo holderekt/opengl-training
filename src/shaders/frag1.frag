@@ -6,7 +6,6 @@ in vec2 Tex;
 
 uniform vec3 objectColor;
 uniform vec3 lightColor;
-uniform vec3 lightPos; 
 uniform vec3 cameraPos;
 
 struct Material{
@@ -51,7 +50,7 @@ struct PointLight{
 
 uniform Light light;
 uniform Material material;
-uniform PointLight pLight;
+uniform PointLight pLight[2];
 uniform DirectionalLight dLight;
 
 vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir){
@@ -73,7 +72,7 @@ vec3 calculatePointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewD
     float distances = length(light.position - fragPos);
     float attenuation = (1.0/(light.constant + light.linear * distances + light.quadratic * (distances * distances)));
     
-    vec3 lightDir = normalize(lightPos - fragPos);
+    vec3 lightDir = normalize(light.position - fragPos);
     float diff = max(dot(normal, lightDir), 0.0);
     vec3 reflectDir = reflect(-lightDir, normal);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shinnes);
@@ -95,10 +94,16 @@ void main(){
 
     vec3 norm = normalize(Normal);
     vec3 viewDir = normalize(cameraPos - FragPos);
+    vec3 lightCalculations = vec3(0.0,0.0,0.0);
 
-    vec3 lightCalculations = calculatePointLight(pLight, norm, FragPos, viewDir);
+    lightCalculations = calculateDirectionalLight(dLight, norm, viewDir);
+
+    for(int i=0; i!=2; i++){
+        lightCalculations += calculatePointLight(pLight[i], norm, FragPos, viewDir);
+    }
+
             
-    vec3 result = lightCalculations * (objectColor * lightColor);
+    vec3 result = lightCalculations * objectColor;
     FragColor = vec4(result, 1.0);
   
 

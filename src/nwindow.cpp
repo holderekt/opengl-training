@@ -22,6 +22,7 @@ glm::vec3 playerPos = glm::vec3(0.0f, -4.5f,  3.0f);
 glm::vec3 playerUp = glm::vec3(0.0f, 1.0f,  0.0f);
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f,  0.0f),glm::vec3(0.0f, 0.0f, -3.0f), 0.0f);
 glm::vec3 lightPos =  glm::vec3(1.0,-2.0,1.0);
+glm::vec3 lightPos2 = glm::vec3(-2.0,-2.0,1.0);
 
 /* Mouse callback utility data */
 bool firstMouse = true;
@@ -136,6 +137,7 @@ int main(){
         float current_frame = glfwGetTime();
         //lightPos.x = sin(current_frame) * 5.0f;
         lightPos.z = cos(current_frame) * 10.0f;
+        lightPos2.z = sin(current_frame) * 10.0f;
 
 
         glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)(800/ 600), 0.1f, 100.0f);
@@ -160,11 +162,23 @@ int main(){
         glBindVertexArray(VAO[0]);  
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
+        lampShader();
+        model = glm::mat4(1.0f);
+        model = glm::translate(model,lightPos2);
+        model = glm::scale(model, glm::vec3(0.1f));
+
+
+        lampShader.setValue("model", model);
+        lampShader.setValue("projection", projection);
+        lampShader.setValue("view", view);
+
+        glBindVertexArray(VAO[0]);  
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
         
         lightShader();
         lightShader.setValue("objectColor", glm::vec3(0.60, 1.00, 0.90));
         lightShader.setValue("lightColor", glm::vec3(1.0,1.0,1.0));
-        lightShader.setValue("lightPos", lightPos);
         lightShader.setValue("cameraPos", camera.getPosition());
 
         lightShader.setValue("material.diffuse", (int)0);
@@ -172,13 +186,27 @@ int main(){
         lightShader.setValue("material.specular", glm::vec3(0.5, 0.5, 0.5));
         lightShader.setValue("material.shinnes", 64.0f);
 
-        lightShader.setValue("pLight.ambient", glm::vec3(0.2, 0.2, 0.2));
-        lightShader.setValue("pLight.diffuse", glm::vec3( 0.5, 0.5, 0.5));
-        lightShader.setValue("pLight.specular", glm::vec3(1.0, 1.0, 1.0));
-        lightShader.setValue("pLight.position", lightPos);
-        lightShader.setValue("pLight.constant", 1.0f);
-        lightShader.setValue("pLight.quadratic", 0.032f);
-        lightShader.setValue("pLight.linear", 0.09f);
+        lightShader.setValue("dLight.ambient", glm::vec3(0.2, 0.2, 0.2));
+        lightShader.setValue("dLight.diffuse", glm::vec3( 0.5, 0.5, 0.5));
+        lightShader.setValue("dLight.specular", glm::vec3(1.0, 1.0, 1.0));
+        lightShader.setValue("dLight.direction", glm::vec3(-0.8f, -1.0f, -0.7));
+
+        lightShader.setValue("pLight[0].ambient", glm::vec3(0.2, 0.2, 0.2));
+        lightShader.setValue("pLight[0].diffuse", glm::vec3( 0.5, 0.5, 0.5));
+        lightShader.setValue("pLight[0].specular", glm::vec3(1.0, 1.0, 1.0));
+        lightShader.setValue("pLight[0].position", lightPos);
+        lightShader.setValue("pLight[0].constant", 1.0f);
+        lightShader.setValue("pLight[0].quadratic", 0.032f);
+        lightShader.setValue("pLight[0].linear", 0.09f);
+
+        lightShader.setValue("pLight[1].ambient", glm::vec3(0.2, 0.2, 0.2));
+        lightShader.setValue("pLight[1].diffuse", glm::vec3( 0.5, 0.5, 0.5));
+        lightShader.setValue("pLight[1].specular", glm::vec3(1.0, 1.0, 1.0));
+        lightShader.setValue("pLight[1].position", lightPos2);
+        lightShader.setValue("pLight[1].constant", 1.0f);
+        lightShader.setValue("pLight[1].quadratic", 0.032f);
+        lightShader.setValue("pLight[1].linear", 0.09f);
+
 
         lightShader.setValue("projection", projection);
         lightShader.setValue("view", view);
