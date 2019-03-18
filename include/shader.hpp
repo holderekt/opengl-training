@@ -22,9 +22,6 @@ class Shader{
         void setValue(const std::string&, glm::mat4);
         void setValue(const std::string&, glm::vec3);
         
-        // TODO
-        void setValue(const std::string&, bool);
-        
     private:
         std::string _loadShader(const GLchar*);
 };

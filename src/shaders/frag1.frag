@@ -52,6 +52,7 @@ uniform Light light;
 uniform Material material;
 uniform PointLight pLight[2];
 uniform DirectionalLight dLight;
+uniform bool directionalIsActive = false;
 
 vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir){
     vec3 lightDir = normalize(-light.direction);
@@ -96,7 +97,9 @@ void main(){
     vec3 viewDir = normalize(cameraPos - FragPos);
     vec3 lightCalculations = vec3(0.0,0.0,0.0);
 
-    // lightCalculations = calculateDirectionalLight(dLight, norm, viewDir);
+    if(directionalIsActive){
+        lightCalculations = calculateDirectionalLight(dLight, norm, viewDir);
+    }
 
     for(int i=0; i!=2; i++){
         lightCalculations += calculatePointLight(pLight[i], norm, FragPos, viewDir);

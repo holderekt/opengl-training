@@ -11,6 +11,7 @@
 #include <texture.hpp>
 #include <model.hpp>
 #include <camera.hpp>
+#include <light.hpp>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *glWindowPos3dv);
@@ -127,6 +128,26 @@ int main(){
     glEnable(GL_DEPTH_TEST);  
 
 
+    DirectionalLight light1(
+        glm::vec3(0.2, 0.2, 0.2),
+        glm::vec3( 0.5, 0.5, 0.5),
+        glm::vec3(1.0, 1.0, 1.0),
+        glm::vec3(-0.8f, -1.0f, -0.7));
+
+    PointLight lightp1(
+        glm::vec3(0.2, 0.2, 0.2),
+        glm::vec3( 0.5, 0.5, 0.5),
+        glm::vec3(1.0, 1.0, 1.0),
+        lightPos, 1.0f, 0.032f, 0.09f
+    );
+
+    PointLight lightp2(
+        glm::vec3(0.2, 0.2, 0.2),
+        glm::vec3( 0.5, 0.5, 0.5),
+        glm::vec3(1.0, 1.0, 1.0),
+        lightPos2, 1.0f, 0.032f, 0.09f
+    );
+
 
     // Main Loop
     while(!glfwWindowShouldClose(window)){
@@ -186,27 +207,14 @@ int main(){
         lightShader.setValue("material.specular", glm::vec3(0.5, 0.5, 0.5));
         lightShader.setValue("material.shinnes", 64.0f);
 
-        lightShader.setValue("dLight.ambient", glm::vec3(0.2, 0.2, 0.2));
-        lightShader.setValue("dLight.diffuse", glm::vec3( 0.5, 0.5, 0.5));
-        lightShader.setValue("dLight.specular", glm::vec3(1.0, 1.0, 1.0));
-        lightShader.setValue("dLight.direction", glm::vec3(-0.8f, -1.0f, -0.7));
 
-        lightShader.setValue("pLight[0].ambient", glm::vec3(0.2, 0.2, 0.2));
-        lightShader.setValue("pLight[0].diffuse", glm::vec3( 0.5, 0.5, 0.5));
-        lightShader.setValue("pLight[0].specular", glm::vec3(1.0, 1.0, 1.0));
-        lightShader.setValue("pLight[0].position", lightPos);
-        lightShader.setValue("pLight[0].constant", 1.0f);
-        lightShader.setValue("pLight[0].quadratic", 0.032f);
-        lightShader.setValue("pLight[0].linear", 0.09f);
+        light1.use(lightShader, "dLight");
 
-        lightShader.setValue("pLight[1].ambient", glm::vec3(0.2, 0.2, 0.2));
-        lightShader.setValue("pLight[1].diffuse", glm::vec3( 0.5, 0.5, 0.5));
-        lightShader.setValue("pLight[1].specular", glm::vec3(1.0, 1.0, 1.0));
-        lightShader.setValue("pLight[1].position", lightPos2);
-        lightShader.setValue("pLight[1].constant", 1.0f);
-        lightShader.setValue("pLight[1].quadratic", 0.032f);
-        lightShader.setValue("pLight[1].linear", 0.09f);
+        lightp1.setPosition(lightPos);
+        lightp1.use(lightShader, "pLight", 0);
 
+        lightp2.setPosition(lightPos2);
+        lightp2.use(lightShader, "pLight", 1);
 
         lightShader.setValue("projection", projection);
         lightShader.setValue("view", view);
@@ -245,12 +253,6 @@ int main(){
             }
         }
 
-
-        
-
-    
-    
-        
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
