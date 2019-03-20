@@ -106,9 +106,9 @@ void main(){
     }
 
             
-    vec3 result = lightCalculations * objectColor;
-    FragColor = vec4(result, 1.0);
-  
+    //vec3 result = lightCalculations * objectColor;
+    //FragColor = vec4(result, 1.0);
+    FragColor = texture(material.diffuse, Tex) * vec4(objectColor, 1.0);
 
 }
 
