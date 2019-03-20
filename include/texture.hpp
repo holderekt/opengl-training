@@ -9,6 +9,14 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+int TEXTURE_POSITION[5] = {
+    GL_TEXTURE0,
+    GL_TEXTURE1,
+    GL_TEXTURE2,
+    GL_TEXTURE3,
+    GL_TEXTURE4,
+};
+
 typedef struct{
     uint8_t r;
     uint8_t g;
@@ -37,6 +45,10 @@ public:
     Texture(std::string);
     void load_image(std::string);
     void operator()(){glBindTexture(GL_TEXTURE_2D, ID);}
+    void operator()(size_t value){ 
+        glActiveTexture(TEXTURE_POSITION[value]);
+        glBindTexture(GL_TEXTURE_2D, ID);
+    }
 
 private:
     unsigned int ID;
