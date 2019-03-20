@@ -204,7 +204,6 @@ int main(){
 
         lightShader.setValue("material.diffuse", (int)0);
         lightShader.setValue("material.specular", (int)1);
-        lightShader.setValue("material.specular", glm::vec3(0.5, 0.5, 0.5));
         lightShader.setValue("material.shinnes", 64.0f);
 
 
@@ -219,10 +218,9 @@ int main(){
         lightShader.setValue("projection", projection);
         lightShader.setValue("view", view);
 
-        glActiveTexture(GL_TEXTURE0);
-        crateTex();
-        glActiveTexture(GL_TEXTURE1);
-        crate_spec_mapTex();
+     
+        crateTex(0);
+        crate_spec_mapTex(1);
 
         glBindVertexArray(VAO[1]);
 
