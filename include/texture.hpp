@@ -9,13 +9,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-int TEXTURE_POSITION[5] = {
-    GL_TEXTURE0,
-    GL_TEXTURE1,
-    GL_TEXTURE2,
-    GL_TEXTURE3,
-    GL_TEXTURE4,
-};
+
+typedef enum {
+    TEXTURE_SPECULAR,
+    TEXTURE_DIFFUSE
+}TEXTURE_TYPE;
 
 typedef struct{
     uint8_t r;
@@ -42,22 +40,25 @@ typedef struct{
 class Texture{
 public:
     Texture(){ glGenTextures(1, &ID);}
-    Texture(std::string);
+    Texture(std::string, TEXTURE_TYPE);
     void load_image(std::string);
     void operator()(){glBindTexture(GL_TEXTURE_2D, ID);}
     void operator()(size_t value){ 
-        glActiveTexture(TEXTURE_POSITION[value]);
+        glActiveTexture(GL_TEXTURE0 + value);
         glBindTexture(GL_TEXTURE_2D, ID);
     }
+    TEXTURE_TYPE getType(){return type;}
 
 private:
     unsigned int ID;
+    TEXTURE_TYPE type;
 
     template<class T>
     void _load_bytes(png_structp png_ptr,uint32_t width, uint32_t height, T* image, int);
 };
 
-Texture::Texture(std::string filename){
+Texture::Texture(std::string filename, TEXTURE_TYPE type){
+    this->type = type;
     glGenTextures(1, &ID);
     load_image(filename);
 }

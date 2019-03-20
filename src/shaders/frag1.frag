@@ -49,7 +49,7 @@ struct PointLight{
 
 
 uniform Light light;
-uniform Material material;
+uniform Material material1;
 uniform PointLight pLight[2];
 uniform DirectionalLight dLight;
 uniform bool directionalIsActive = false;
@@ -58,11 +58,11 @@ vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir
     vec3 lightDir = normalize(-light.direction);
     float diff = max(dot(normal, lightDir), 0.0);
     vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shinnes);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material1.shinnes);
 
-    vec3 ambient = light.ambient * texture(material.diffuse , Tex).rgb;
-    vec3 diffuse = light.diffuse * diff * texture(material.diffuse , Tex).rgb;
-    vec3 specular = light.specular * spec * texture(material.specular, Tex).rgb; 
+    vec3 ambient = light.ambient * texture(material1.diffuse , Tex).rgb;
+    vec3 diffuse = light.diffuse * diff * texture(material1.diffuse , Tex).rgb;
+    vec3 specular = light.specular * spec * texture(material1.specular, Tex).rgb; 
 
     return (ambient + diffuse + specular);
 }
@@ -76,11 +76,11 @@ vec3 calculatePointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewD
     vec3 lightDir = normalize(light.position - fragPos);
     float diff = max(dot(normal, lightDir), 0.0);
     vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shinnes);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material1.shinnes);
  
-    vec3 ambient = light.ambient * texture(material.diffuse , Tex).rgb;
-    vec3 diffuse = light.diffuse * diff * texture(material.diffuse , Tex).rgb;
-    vec3 specular = light.specular * spec * texture(material.specular, Tex).rgb; 
+    vec3 ambient = light.ambient * texture(material1.diffuse , Tex).rgb;
+    vec3 diffuse = light.diffuse * diff * texture(material1.diffuse , Tex).rgb;
+    vec3 specular = light.specular * spec * texture(material1.specular, Tex).rgb; 
 
 
     ambient *= attenuation;
@@ -106,9 +106,8 @@ void main(){
     }
 
             
-    //vec3 result = lightCalculations * objectColor;
-    //FragColor = vec4(result, 1.0);
-    FragColor = texture(material.diffuse, Tex) * vec4(objectColor, 1.0);
+    vec3 result = lightCalculations * objectColor;
+    FragColor = vec4(result, 1.0);
 
 }
 

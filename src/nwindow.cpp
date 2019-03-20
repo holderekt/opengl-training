@@ -12,6 +12,7 @@
 #include <model.hpp>
 #include <camera.hpp>
 #include <light.hpp>
+#include <mesh.hpp>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *glWindowPos3dv);
@@ -91,6 +92,8 @@ int main(){
     Shader lampShader("./src/shaders/shader2.vert", "./src/shaders/frag2.frag");
     Model<float> cube1("./models/cube.csv");
 
+    Vertex ver[36] = cube1();
+
     /* VBO and VAO construction */
 
     unsigned int VAO[2], VBO[2];
@@ -122,9 +125,10 @@ int main(){
 
     /* Textures */
 
-    Texture crateTex("./textures/crate.png");
-    Texture crate_spec_mapTex("./textures/crate_specular_map.png");
-    // Texture redTex("./textures/red.png");
+    Texture crateTex("./textures/crate.png", TEXTURE_DIFFUSE);
+    Texture crate_spec_mapTex("./textures/crate_specular_map.png", TEXTURE_SPECULAR);
+
+
     glEnable(GL_DEPTH_TEST);  
 
 
@@ -202,9 +206,9 @@ int main(){
         lightShader.setValue("lightColor", glm::vec3(1.0,1.0,1.0));
         lightShader.setValue("cameraPos", camera.getPosition());
 
-        lightShader.setValue("material.diffuse", (int)0);
-        lightShader.setValue("material.specular", (int)1);
-        lightShader.setValue("material.shinnes", 64.0f);
+        lightShader.setValue("material1.diffuse", (int)0);
+        lightShader.setValue("material1.specular", (int)1);
+        lightShader.setValue("material1.shinnes", 64.0f);
 
 
         light1.use(lightShader, "dLight");
