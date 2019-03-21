@@ -12,17 +12,17 @@
 typedef struct{
     glm::vec3 position;
     glm::vec3 normal;
-    glm::vec3 texture_coordinates;
+    glm::vec2 texture_coordinates;
 }Vertex;
 
 
 class Mesh{
 public:
     std::vector<Vertex> vertexs;
-    std::vector<size_t> ebo_indices;
+    std::vector<unsigned int> ebo_indices;
     std::vector<Texture> textures;
 
-    Mesh(std::vector<Vertex>, std::vector<size_t>, std::vector<Texture>);
+    Mesh(std::vector<Vertex>, std::vector<unsigned int >, std::vector<Texture>);
     void draw(Shader);
 
 private:
@@ -30,7 +30,7 @@ private:
 
 };
 
-Mesh::Mesh(std::vector<Vertex> vertexs, std::vector<size_t> ebo_indices, std::vector<Texture> textures):
+Mesh::Mesh(std::vector<Vertex> vertexs, std::vector<unsigned int> ebo_indices, std::vector<Texture> textures):
 vertexs(vertexs), ebo_indices(ebo_indices), textures(textures){
 
     glGenBuffers(1, &VBO);
@@ -44,7 +44,7 @@ vertexs(vertexs), ebo_indices(ebo_indices), textures(textures){
         vertexs.size() * sizeof(Vertex), 
         &vertexs[0], 
         GL_STATIC_DRAW
-        );
+        );  
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, 
@@ -59,29 +59,28 @@ vertexs(vertexs), ebo_indices(ebo_indices), textures(textures){
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texture_coordinates));
     glEnableVertexAttribArray(2);
-
-    // TODO Bind vao here?? idk
 }
 
 void Mesh::draw(Shader shr){
     size_t diffuse_n = 1;
     size_t specular_n = 1;
-    std::string varname = "material";
-
+    
     for(size_t i = 0; i!= textures.size(); i++){
+
+         std::string varname;
         
         if(textures[i].getType() == TEXTURE_DIFFUSE){
-             varname += std::to_string(diffuse_n++) + "diffuse";
+            varname = "material" + std::to_string(diffuse_n++) + ".diffuse";
         }else if(textures[i].getType() == TEXTURE_SPECULAR){
-            varname += std::to_string(specular_n++) + "specular";
+            varname = "material" + std::to_string(specular_n++) + ".specular";
         }
 
         shr.setValue(varname, (int)i);
-        textures[i](i);
+        textures[i].use(i);
     }
 
     glBindVertexArray(VAO);
-    // glDrawElements(GL_TRIANGLES, ebo_indices.size(), GL_UNSIGNED_INT, 0);
+    // TODO ENABLE glDrawElements(GL_TRIANGLES, ebo_indices.size(), GL_UNSIGNED_INT, 0);
     glDrawArrays(GL_TRIANGLES, 0, vertexs.size());
     glBindVertexArray(0);
 }

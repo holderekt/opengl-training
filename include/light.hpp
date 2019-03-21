@@ -74,6 +74,7 @@ PointLight::PointLight(vec3 ambient, vec3 diffuse, vec3 specular, vec3 position,
 
 void PointLight::use(Shader &shr, const std::string& varname, int position){
         std::string pos = std::to_string(position);
+        shr.setValue("pointIsActive", true);
         shr.setValue(varname + "[" + pos + "]" + ".ambient", this->getAmbient());
         shr.setValue(varname + "[" + pos + "]" + ".diffuse", this->getDiffuse());
         shr.setValue(varname + "[" + pos + "]" + ".specular", this->getSpecular());

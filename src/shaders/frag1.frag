@@ -53,6 +53,7 @@ uniform Material material1;
 uniform PointLight pLight[2];
 uniform DirectionalLight dLight;
 uniform bool directionalIsActive = false;
+uniform bool pointIsActive = false;
 
 vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir){
     vec3 lightDir = normalize(-light.direction);
@@ -101,13 +102,17 @@ void main(){
         lightCalculations = calculateDirectionalLight(dLight, norm, viewDir);
     }
 
-    for(int i=0; i!=2; i++){
-        lightCalculations += calculatePointLight(pLight[i], norm, FragPos, viewDir);
+    if(pointIsActive){
+        for(int i=0; i!=2; i++){
+            lightCalculations += calculatePointLight(pLight[i], norm, FragPos, viewDir);
+        }
     }
-
-            
-    vec3 result = lightCalculations * objectColor;
-    FragColor = vec4(result, 1.0);
-
+    
+    if(directionalIsActive == false  && pointIsActive == false){
+        FragColor = texture(material1.diffuse, Tex) * vec4(objectColor, 1.0);
+    }else{
+        vec3 result = lightCalculations * objectColor;
+        FragColor = vec4(result, 1.0);
+    }
 }
 

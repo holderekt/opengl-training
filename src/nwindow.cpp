@@ -92,41 +92,23 @@ int main(){
     Shader lampShader("./src/shaders/shader2.vert", "./src/shaders/frag2.frag");
     Model<float> cube1("./models/cube.csv");
 
-    Vertex ver[36] = cube1();
+    Texture crateTex("./textures/crate.png", TEXTURE_DIFFUSE);
+    Texture crate_spec_mapTex("./textures/crate_specular_map.png", TEXTURE_SPECULAR);
 
-    /* VBO and VAO construction */
+    std::vector<Texture> vtex;
+    vtex.push_back(crateTex);
+    vtex.push_back(crate_spec_mapTex);
 
-    unsigned int VAO[2], VBO[2];
-    glGenBuffers(2, VBO);
-    glGenVertexArrays(2, VAO);
+    std::vector<unsigned int> mario;
+    Mesh msh(cube1.getcose(), mario , vtex);
 
-    glBindVertexArray(VAO[0]);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
-    glBufferData(GL_ARRAY_BUFFER, cube1.size(), cube1(), GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
  
-
-    glBindVertexArray(VAO[1]);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
-    glBufferData(GL_ARRAY_BUFFER, cube1.size(), cube1(), GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(3*sizeof(float)));
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(6*sizeof(float)));
-    glEnableVertexAttribArray(2);
-
     /* Cursor settings */
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  
     glfwSetCursorPosCallback(window, mouse_callback);  
 
 
-    /* Textures */
-
-    Texture crateTex("./textures/crate.png", TEXTURE_DIFFUSE);
-    Texture crate_spec_mapTex("./textures/crate_specular_map.png", TEXTURE_SPECULAR);
 
 
     glEnable(GL_DEPTH_TEST);  
@@ -158,16 +140,11 @@ int main(){
 
         
         processInput(window);
-
-        float current_frame = glfwGetTime();
-        //lightPos.x = sin(current_frame) * 5.0f;
-        lightPos.z = cos(current_frame) * 10.0f;
-        lightPos2.z = sin(current_frame) * 10.0f;
-
+        float a = cos(glfwGetTime());
 
         glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)(800/ 600), 0.1f, 100.0f);
         glm::mat4 view = camera.getView();
-        glm::mat4 model;
+        glm::mat4 model = glm::mat4(1);
         glm::mat4 transformation;
 
         // Background color
@@ -175,86 +152,19 @@ int main(){
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        lampShader();
-        model = glm::mat4(1.0f);
-        model = glm::translate(model,lightPos);
-        model = glm::scale(model, glm::vec3(0.1f));
-
-        lampShader.setValue("model", model);
-        lampShader.setValue("projection", projection);
-        lampShader.setValue("view", view);
-
-        glBindVertexArray(VAO[0]);  
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-
-        lampShader();
-        model = glm::mat4(1.0f);
-        model = glm::translate(model,lightPos2);
-        model = glm::scale(model, glm::vec3(0.1f));
-
-
-        lampShader.setValue("model", model);
-        lampShader.setValue("projection", projection);
-        lampShader.setValue("view", view);
-
-        glBindVertexArray(VAO[0]);  
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-
-        
+ 
         lightShader();
-        lightShader.setValue("objectColor", glm::vec3(0.60, 1.00, 0.90));
-        lightShader.setValue("lightColor", glm::vec3(1.0,1.0,1.0));
-        lightShader.setValue("cameraPos", camera.getPosition());
-
-        lightShader.setValue("material1.diffuse", (int)0);
-        lightShader.setValue("material1.specular", (int)1);
-        lightShader.setValue("material1.shinnes", 64.0f);
-
-
-        light1.use(lightShader, "dLight");
-
-        lightp1.setPosition(lightPos);
-        lightp1.use(lightShader, "pLight", 0);
-
-        lightp2.setPosition(lightPos2);
-        lightp2.use(lightShader, "pLight", 1);
-
+ 
         lightShader.setValue("projection", projection);
         lightShader.setValue("view", view);
+        model = glm::translate(model, glm::vec3(0.0f,a, 0.0f));
+        lightShader.setValue("model", model);
+        lightShader.setValue("objectColor", glm::vec3(0.1,0.2,0.5));
 
-     
-        crateTex(0);
-        crate_spec_mapTex(1);
 
-        glBindVertexArray(VAO[1]);
+        msh.draw(lightShader);
 
-        glm::vec3 posizioni[] ={
-            glm::vec3(0.0,-1.0,0.0),
-            glm::vec3(-1,-1,0.0),
-            glm::vec3(1.0,-1.0,0.0),
-        };
-
-        for (unsigned int i = 0; i != 3; i++){
-            model = glm::mat4(1.0);
-            model = glm::translate(model, posizioni[i]);
-            float angle = 10 * i;
-            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f,0.3f,0.5f));
-            lightShader.setValue("model", model);
-
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
-
-      
-        for(int j = 0; j != 200; j++){
-                model = glm::mat4(1.0);
-                model = glm::translate(model, glm::vec3(0.0, 0.0, -(float)j*j));
-            for (unsigned int i = 0; i != 3; i++){
-                model = glm::translate(model, posizioni[i]);
-                lightShader.setValue("model", model);
-                glDrawArrays(GL_TRIANGLES, 0, 36);
-            }
-        }
-
+        
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

@@ -42,12 +42,9 @@ public:
     Texture(){ glGenTextures(1, &ID);}
     Texture(std::string, TEXTURE_TYPE);
     void load_image(std::string);
-    void operator()(){glBindTexture(GL_TEXTURE_2D, ID);}
-    void operator()(size_t value){ 
-        glActiveTexture(GL_TEXTURE0 + value);
-        glBindTexture(GL_TEXTURE_2D, ID);
-    }
-    TEXTURE_TYPE getType(){return type;}
+    void use();
+    void use(unsigned int);
+    TEXTURE_TYPE getType();
 
 private:
     unsigned int ID;
@@ -56,6 +53,20 @@ private:
     template<class T>
     void _load_bytes(png_structp png_ptr,uint32_t width, uint32_t height, T* image, int);
 };
+
+
+TEXTURE_TYPE Texture::getType(){
+    return type;
+}
+
+void Texture::use(){
+    glBindTexture(GL_TEXTURE_2D, ID);
+}
+
+void Texture::use(unsigned int value){
+    glActiveTexture(GL_TEXTURE0 + value);
+    glBindTexture(GL_TEXTURE_2D, ID);
+}
 
 Texture::Texture(std::string filename, TEXTURE_TYPE type){
     this->type = type;
