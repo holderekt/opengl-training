@@ -98,10 +98,11 @@ int main(){
     std::vector<Texture> vtex;
     vtex.push_back(crateTex);
     vtex.push_back(crate_spec_mapTex);
+    std::vector<Texture> vvvv;
 
     std::vector<unsigned int> mario;
     Mesh msh(cube1.getcose(), mario , vtex);
-
+    Mesh msh2(cube1.getcose(), mario, vvvv);
  
     /* Cursor settings */
 
@@ -140,26 +141,63 @@ int main(){
 
         
         processInput(window);
-        float a = cos(glfwGetTime());
+         float current_frame = glfwGetTime();
+        //lightPos.x = sin(current_frame) * 5.0f;
+        lightPos.z = cos(current_frame) * 3;
+        lightPos2.z = sin(current_frame) * 10.0f;
 
         glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)(800/ 600), 0.1f, 100.0f);
         glm::mat4 view = camera.getView();
         glm::mat4 model = glm::mat4(1);
         glm::mat4 transformation;
 
+
         // Background color
     
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
- 
+
+        lampShader();
+        model = glm::mat4(1.0f);
+        model = glm::translate(model,lightPos);
+        model = glm::scale(model, glm::vec3(0.1f));
+        lampShader.setValue("model", model);
+        lampShader.setValue("projection", projection);
+        lampShader.setValue("view", view);
+        msh2.draw(lampShader);
+
+        lampShader();
+        model = glm::mat4(1.0f);
+        model = glm::translate(model,lightPos2);
+        model = glm::scale(model, glm::vec3(0.1f));
+        lampShader.setValue("model", model);
+        lampShader.setValue("projection", projection);
+        lampShader.setValue("view", view);
+        msh2.draw(lampShader);
+
+
         lightShader();
+
+        lightShader.setValue("objectColor", glm::vec3(0.60, 1.00, 0.90));
+        lightShader.setValue("lightColor", glm::vec3(1.0,1.0,1.0));
+        lightShader.setValue("cameraPos", camera.getPosition());
+        lightShader.setValue("material1.shinnes", 64.0f);
+
+        //light1.use(lightShader, "dLight");
+
+        lightp1.setPosition(lightPos);
+        lightp1.use(lightShader, "pLight", 0);
+
+        lightp2.setPosition(lightPos2);
+        lightp2.use(lightShader, "pLight", 1);
  
+        model = glm::mat4(1);
+         model = glm::translate(model,glm::vec3(0.0,-2.0,0.0));
         lightShader.setValue("projection", projection);
         lightShader.setValue("view", view);
-        model = glm::translate(model, glm::vec3(0.0f,a, 0.0f));
         lightShader.setValue("model", model);
-        lightShader.setValue("objectColor", glm::vec3(0.1,0.2,0.5));
+        lightShader.setValue("objectColor", glm::vec3(1.0,1.0,1.0));
 
 
         msh.draw(lightShader);
