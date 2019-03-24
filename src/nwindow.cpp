@@ -13,6 +13,7 @@
 #include <camera.hpp>
 #include <light.hpp>
 #include <mesh.hpp>
+#include <model2.hpp>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *glWindowPos3dv);
@@ -90,6 +91,7 @@ int main(){
 
     Shader lightShader("./src/shaders/shader1.vert", "./src/shaders/frag1.frag");
     Shader lampShader("./src/shaders/shader2.vert", "./src/shaders/frag2.frag");
+    Shader modelshader("./src/shaders/shader3.vert", "./src/shaders/frag3.frag");
     Model<float> cube1("./models/cube.csv");
 
     Texture crateTex("./textures/crate.png", TEXTURE_DIFFUSE);
@@ -103,13 +105,14 @@ int main(){
     std::vector<unsigned int> mario;
     Mesh msh(cube1.getcose(), mario , vtex);
     Mesh msh2(cube1.getcose(), mario, vvvv);
+    Model2 modelff("/home/navis/workspace/opengl-training/nanosuit/nanosuit.obj");
  
     /* Cursor settings */
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  
     glfwSetCursorPosCallback(window, mouse_callback);  
 
-
+glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 
     glEnable(GL_DEPTH_TEST);  
@@ -141,68 +144,74 @@ int main(){
 
         
         processInput(window);
-         float current_frame = glfwGetTime();
-        //lightPos.x = sin(current_frame) * 5.0f;
-        lightPos.z = cos(current_frame) * 3;
-        lightPos2.z = sin(current_frame) * 10.0f;
+        //  float current_frame = glfwGetTime();
+        // //lightPos.x = sin(current_frame) * 5.0f;
+        // lightPos.z = cos(current_frame) * 3;
+        // lightPos2.z = sin(current_frame) * 10.0f;
 
         glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)(800/ 600), 0.1f, 100.0f);
         glm::mat4 view = camera.getView();
         glm::mat4 model = glm::mat4(1);
-        glm::mat4 transformation;
+        // glm::mat4 transformation;
 
 
-        // Background color
+        // // Background color
     
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-        lampShader();
-        model = glm::mat4(1.0f);
-        model = glm::translate(model,lightPos);
-        model = glm::scale(model, glm::vec3(0.1f));
-        lampShader.setValue("model", model);
-        lampShader.setValue("projection", projection);
-        lampShader.setValue("view", view);
-        msh2.draw(lampShader);
+        // lampShader();
+        // model = glm::mat4(1.0f);
+        // model = glm::translate(model,lightPos);
+        // model = glm::scale(model, glm::vec3(0.1f));
+        // lampShader.setValue("model", model);
+        // lampShader.setValue("projection", projection);
+        // lampShader.setValue("view", view);
+        // msh2.draw(lampShader);
 
-        lampShader();
-        model = glm::mat4(1.0f);
-        model = glm::translate(model,lightPos2);
-        model = glm::scale(model, glm::vec3(0.1f));
-        lampShader.setValue("model", model);
-        lampShader.setValue("projection", projection);
-        lampShader.setValue("view", view);
-        msh2.draw(lampShader);
+        // lampShader();
+        // model = glm::mat4(1.0f);
+        // model = glm::translate(model,lightPos2);
+        // model = glm::scale(model, glm::vec3(0.1f));
+        // lampShader.setValue("model", model);
+        // lampShader.setValue("projection", projection);
+        // lampShader.setValue("view", view);
+        // msh2.draw(lampShader);
 
 
-        lightShader();
+        // lightShader();
 
-        lightShader.setValue("objectColor", glm::vec3(0.60, 1.00, 0.90));
-        lightShader.setValue("lightColor", glm::vec3(1.0,1.0,1.0));
-        lightShader.setValue("cameraPos", camera.getPosition());
-        lightShader.setValue("material1.shinnes", 64.0f);
+        // lightShader.setValue("objectColor", glm::vec3(0.60, 1.00, 0.90));
+        // lightShader.setValue("lightColor", glm::vec3(1.0,1.0,1.0));
+        // lightShader.setValue("cameraPos", camera.getPosition());
+        // lightShader.setValue("material1.shinnes", 64.0f);
 
-        //light1.use(lightShader, "dLight");
+        // //light1.use(lightShader, "dLight");
 
-        lightp1.setPosition(lightPos);
-        lightp1.use(lightShader, "pLight", 0);
+        // lightp1.setPosition(lightPos);
+        // lightp1.use(lightShader, "pLight", 0);
 
-        lightp2.setPosition(lightPos2);
-        lightp2.use(lightShader, "pLight", 1);
+        // lightp2.setPosition(lightPos2);
+        // lightp2.use(lightShader, "pLight", 1);
  
-        model = glm::mat4(1);
-         model = glm::translate(model,glm::vec3(0.0,-2.0,0.0));
-        lightShader.setValue("projection", projection);
-        lightShader.setValue("view", view);
-        lightShader.setValue("model", model);
-        lightShader.setValue("objectColor", glm::vec3(1.0,1.0,1.0));
+        // model = glm::mat4(1);
+        //  model = glm::translate(model,glm::vec3(0.0,-2.0,0.0));
+        // lightShader.setValue("projection", projection);
+        // lightShader.setValue("view", view);
+        // lightShader.setValue("model", model);
+        // lightShader.setValue("objectColor", glm::vec3(1.0,1.0,1.0));
 
 
-        msh.draw(lightShader);
+        // msh.draw(lightShader);
 
+        modelshader();
+         modelshader.setValue("projection", projection);
+         modelshader.setValue("view", view);
+         modelshader.setValue("model", model);
         
+        modelff.draw(modelshader);
+     
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

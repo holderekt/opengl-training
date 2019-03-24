@@ -45,6 +45,7 @@ public:
     void use();
     void use(unsigned int);
     TEXTURE_TYPE getType();
+    
 
 private:
     unsigned int ID;

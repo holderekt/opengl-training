@@ -75,12 +75,13 @@ void Mesh::draw(Shader shr){
             varname = "material" + std::to_string(specular_n++) + ".specular";
         }
 
+
         shr.setValue(varname, (int)i);
         textures[i].use(i);
     }
+    shr.setValue("material1.shinnes", 0.32f);
 
     glBindVertexArray(VAO);
-    // TODO ENABLE glDrawElements(GL_TRIANGLES, ebo_indices.size(), GL_UNSIGNED_INT, 0);
-    glDrawArrays(GL_TRIANGLES, 0, vertexs.size());
+    glDrawElements(GL_TRIANGLES, ebo_indices.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 }
